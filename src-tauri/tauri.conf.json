@@ -21,7 +21,8 @@
       {
         "title": "sticky-rs",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "decorations": false
       }
     ],
     "security": {
@@ -38,6 +39,10 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ]
+    },
+    "systemTray": {
+      "iconPath": "icons/icon.png",
+      "iconAsTemplate": true
     }
   }
 }
