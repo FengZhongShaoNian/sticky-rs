@@ -1,38 +1,63 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use std::path::Path;
+use std::sync::atomic::{AtomicUsize};
+use log::{info, trace, warn};
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+use clap::Parser;
+use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri_plugin_log::LogTarget;
+
+use crate::image_io::read_image;
+use crate::window::{create_main_window, open_devtools};
+
+mod events;
+mod image_io;
+mod window;
+
+/// Command line args
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Path of image to open
+    #[arg(short, long)]
+    path: String,
 }
 
+fn get_image_path_from_cmd_args(args: Args) -> String{
+    let path = Path::new(&args.path);
 
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-    args: Vec<String>,
-    cwd: String,
+    if !path.exists() {
+        panic!("Image {} not exits!", args.path);
+    }
+    args.path
 }
 
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
-            println!("{}, {argv:?}, {cwd}", app.package_info().name);
-
-            app.emit_all("single-instance", Payload { args: argv, cwd }).unwrap();
+            info!("{}, {argv:?}, {cwd}", app.package_info().name);
+            let args = Args::parse_from(argv);
+            let image_path = get_image_path_from_cmd_args(args);
+            create_main_window(app, image_path);
         }))
+        .plugin(tauri_plugin_log::Builder::default().targets([
+            LogTarget::LogDir,
+            LogTarget::Stdout,
+            LogTarget::Webview,
+        ]).build())
         .setup(|app|{
-            let main_window = app.get_window("main").unwrap();
-            main_window.set_skip_taskbar(true).unwrap(); // This doesn't work when using wayland!
+            let args = Args::parse();
+            let image_path = get_image_path_from_cmd_args(args);
+            create_main_window(&app.handle(),  image_path);
             Ok(())
         })
         .system_tray(SystemTray::new().with_menu(
             SystemTrayMenu::new()
                 .add_item(CustomMenuItem::new("quit", "Quit"))
         ))
-        .on_system_tray_event(|app, event| {
+        .on_system_tray_event(|_app, event| {
             match event {
                 SystemTrayEvent::MenuItemClick { id, .. } => {
                     match id.as_str() {
@@ -45,7 +70,7 @@ fn main() {
                 _ => {}
             }
         })
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![open_devtools,read_image])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
