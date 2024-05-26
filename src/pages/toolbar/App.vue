@@ -1,52 +1,42 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Greet from "../../components/Greet.vue";
 </script>
 
 <template>
   <div class="container">
-    <h1>Welcome to Tauri!</h1>
-
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="../../assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <p>
-      Recommended IDE setup:
-      <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>
-      +
-      <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-      +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
-      +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
-    </p>
-
-    <Greet />
+    <img class="svg-button" src="../../assets/icons/draw-rectangle.svg" title="draw rectangle">
+    <img class="svg-button" src="../../assets/icons/draw-ellipse.svg" title="draw ellipse"/>
+    <img class="svg-button" src="../../assets/icons/draw-line.svg" title="draw line"/>
+    <img class="svg-button" src="../../assets/icons/draw-arrow.svg" title="draw arrow"/>
+    <img class="svg-button" src="../../assets/icons/draw-freehand.svg" title="draw freehand"/>
+    <img class="svg-button" src="../../assets/icons/draw-highlight.svg" title="draw highlight"/>
+    <img class="svg-button" src="../../assets/icons/pixelart-trace.svg" title="pixelart trace"/>
+    <img class="svg-button" src="../../assets/icons/blurfx.svg" title="blur"/>
+    <img class="svg-button" src="../../assets/icons/draw-text.svg" title="draw text"/>
+    <img class="svg-button" src="../../assets/icons/draw-number.svg" title="draw number"/>
+    <img class="svg-button" src="../../assets/icons/document-save.svg" title="save"/>
+    <img class="svg-button" src="../../assets/icons/edit-copy.svg" title="copy to clipboard"/>
   </div>
 </template>
 
 <style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+.container {
+  flex-direction: row;
+  display: flex;
+  margin: 0;
+  padding: 0;
 }
-
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
+.svg-button {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  padding: 5px 10px;
+}
+.svg-button:active {
+  transform: scale(0.95);
+  background: #535bf2;
+}
+.svg-button:hover {
+  background: #2980b9;
 }
 </style>

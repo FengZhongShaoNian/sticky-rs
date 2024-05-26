@@ -1,26 +1,35 @@
 import {App, Rect} from "leafer-ui";
+import {WebviewWindow} from "@tauri-apps/api/window";
+
+export interface ImageInfo{
+    dataURL: string,
+    width: number,
+    height: number
+}
 
 export class Editor {
-    private app: App;
+    private _app: App;
     private _editing: boolean;
+    private _toolbarWindow: WebviewWindow;
 
-    constructor(backgroundImage: string, width: number, height: number) {
-        this.app = new App({
+    constructor(backgroundImage: ImageInfo, toolbarWindow: WebviewWindow) {
+        this._app = new App({
             view: window,
             ground: { type: 'draw' },
             tree: {},
             sky:  { type: 'draw' }
         });
         const backgroundRect = new Rect({
-            width,
-            height,
+            width: backgroundImage.width,
+            height: backgroundImage.height,
             fill: {
                 type: 'image',
-                url: backgroundImage,
+                url: backgroundImage.dataURL,
             }
         });
-        this.app.ground.add(backgroundRect);
+        this._app.ground.add(backgroundRect);
         this._editing=false;
+        this._toolbarWindow = toolbarWindow;
     }
 
     get editing(): boolean {

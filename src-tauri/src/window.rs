@@ -1,4 +1,5 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
+use log::{info, trace, warn};
 use tauri::{App, AppHandle, LogicalSize, Manager, PhysicalSize};
 use crate::events;
 use crate::image_io::get_image_size;
@@ -52,6 +53,8 @@ fn create_main_window_with_initial_window_size(handle: &AppHandle, image_path: S
         if let Some(data) = payload {
             let page_loaded_event: events::PageLoadedEvent = serde_json::from_str(data).unwrap();
             if page_loaded_event.send_from == window_label {
+                info!("[{window_label}] receive page-loaded event");
+
                 main_window.emit("open-image", image_path.clone()).unwrap()
             }
         }
