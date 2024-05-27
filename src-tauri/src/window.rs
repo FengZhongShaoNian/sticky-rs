@@ -36,6 +36,7 @@ fn create_main_window_with_initial_window_size(handle: &AppHandle, image_path: S
         .always_on_top(true)
         .skip_taskbar(true)
         .visible(false)
+        .center()
         .build()
         .unwrap();
     // main_window.open_devtools();
