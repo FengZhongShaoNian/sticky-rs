@@ -10,31 +10,29 @@ import {
 import {invoke} from '@tauri-apps/api/tauri';
 import logger from "../../common/logger.ts";
 import {Editor} from "./editor.ts";
+import {CustomEvent} from "../../common/custom-event.ts";
+import {generateContextMenuWindowLabel, generateToolbarWindowLabel} from "../../common/window-label.ts";
 
 let editor: Editor | null;
-let toolbarWindow: WebviewWindow | null;
-let popupMenuWindow: WebviewWindow | null;
+const toolbarWindow = createToolbarWindow();
+const customContextMenuWindow = createCustomContextMenu();
 
 // Toolbar窗口顶部距离主窗口底部的距离
 const marginMainWindowBottom = 10;
 
 // 根据当前主窗口的位置的大小计算出一个合适的位置用于展示工具条窗口
-async function calculatePositionForToolbarWindow() {
+async function calculateSuitablePositionForToolbarWindow() {
     const mainWindowInnerSize = await appWindow.innerSize();
     const mainWindowInnerPos = await appWindow.innerPosition();
     return new PhysicalPosition(mainWindowInnerPos.x,
         mainWindowInnerPos.y + mainWindowInnerSize.height + marginMainWindowBottom);
 }
 
-async function createToolbarWindow() {
-    if(toolbarWindow != null){
-        await logger.info(`toolbarWindow is not null, ignore the creation request!`);
-        return ;
-    }
-    const toolbarWindowLabel = appWindow.label + "-toolbar";
+function createToolbarWindow() {
+    const toolbarWindowLabel = generateToolbarWindowLabel(appWindow.label);
     const toolbarSize = new LogicalSize(544, 34);
 
-    toolbarWindow = new WebviewWindow(toolbarWindowLabel, {
+    const win = new WebviewWindow(toolbarWindowLabel, {
         url: 'toolbar.html',
         width: toolbarSize.width,
         height: toolbarSize.height,
@@ -49,22 +47,18 @@ async function createToolbarWindow() {
         alwaysOnTop: true,
         visible: false,
     });
-    const toolbarPosition = await calculatePositionForToolbarWindow();
+
+    let ignored = appWindow.onMoved(async () => {
+        const toolbarPosition = await calculateSuitablePositionForToolbarWindow();
+        await toolbarWindow.setPosition(toolbarPosition);
+    });
+
+    return win;
+}
+
+async function showToolbarWindow(){
+    const toolbarPosition = await calculateSuitablePositionForToolbarWindow();
     await toolbarWindow.setPosition(toolbarPosition);
-
-    await toolbarWindow.once('tauri://error', async function (e) {
-        // an error occurred during webview window creation
-        await logger.error(`an error occurred during webview window creation: ${e.payload}`)
-    });
-
-    await appWindow.onMoved(async (event) => {
-        const {x, y} = event.payload;
-        const mainWindowInnerSize = await appWindow.innerSize();
-        const toolbarPos = new PhysicalPosition(x, y + mainWindowInnerSize.height + marginMainWindowBottom);
-        if(toolbarWindow != null){
-            await toolbarWindow.setPosition(toolbarPos);
-        }
-    });
     await toolbarWindow.show();
 }
 
@@ -97,13 +91,10 @@ async function openImage(imagePath: string): Promise<Editor> {
 }
 
 function createCustomContextMenu() {
-    if(popupMenuWindow != null){
-        return;
-    }
-    const popupMenuWindowLabel = `${appWindow.label}-contextMenu`;
+    const popupMenuWindowLabel = generateContextMenuWindowLabel(appWindow.label);
     const size = new LogicalSize(128, 132);
-    popupMenuWindow = new WebviewWindow(popupMenuWindowLabel, {
-        url: 'popup-menu.html',
+    return  new WebviewWindow(popupMenuWindowLabel, {
+        url: 'context-menu.html',
         width: size.width,
         height: size.height,
         // 不知道为啥Tauri的resizable设置为false会导致窗口大小不对
@@ -117,10 +108,6 @@ function createCustomContextMenu() {
         alwaysOnTop: true,
         visible: false,
     });
-    let ignore = popupMenuWindow.once('tauri://error', async function (e) {
-        // an error occurred during webview window creation
-        await logger.error(`an error occurred during popupMenuWindow creation: ${e.payload}`)
-    });
 }
 
 async function delay(milliSeconds: number) {
@@ -130,15 +117,39 @@ async function delay(milliSeconds: number) {
 }
 
 async function showCustomContextMenu(position: LogicalPosition) {
-    if (popupMenuWindow == null) {
-        createCustomContextMenu();
-    }
-    await popupMenuWindow?.setPosition(position);
-    await popupMenuWindow?.show();
+    await customContextMenuWindow.setPosition(position);
+    await customContextMenuWindow.show();
 
     // 延迟一会儿再设置焦点，目的是让弹出窗口位于主窗口之上，否则主窗口会盖住弹出窗口的一部分
     await delay(100);
-    await popupMenuWindow?.setFocus();
+    await customContextMenuWindow.setFocus();
+}
+
+async function handleCustomContextMenuEvents(){
+    await listen(CustomEvent.MENU_TOGGLE_TOOLBAR, async (event) => {
+        await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
+        const visible = await toolbarWindow.isVisible();
+        if(visible){
+            await toolbarWindow.hide();
+        }else {
+            await showToolbarWindow();
+        }
+    });
+
+    await listen(CustomEvent.MENU_COPY_TO_CLIPBOARD, async (event) => {
+        await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
+        // TODO
+    });
+
+    await listen(CustomEvent.MENU_SAVE_TO_FILE, async (event) => {
+        await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
+        // TODO
+    });
+
+    await listen(CustomEvent.MENU_CLOSE_WINDOW, async (event) => {
+        await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
+        await appWindow.close();
+    });
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
@@ -149,9 +160,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         await logger.info('received imagePath: ' + imagePath);
 
         editor = await openImage(imagePath);
-
-        // 创建toolbar
-        await createToolbarWindow();
+        await showToolbarWindow();
     });
 
     // 页面DOM加载完成
@@ -161,8 +170,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     await logger.info('pageLoaded event sent');
 
-    // 创建自定义的右键菜单
-    createCustomContextMenu();
+    await handleCustomContextMenuEvents();
 });
 
 document.addEventListener('contextmenu', async (event) => {
@@ -171,10 +179,10 @@ document.addEventListener('contextmenu', async (event) => {
 
     // 展示自定义右键菜单
     let logicalPosition = new LogicalPosition(event.screenX, event.screenY);
-    await showCustomContextMenu(logicalPosition);
+   await showCustomContextMenu(logicalPosition);
 
 }, false);
 
 document.addEventListener('click', async (_event) => {
-    await popupMenuWindow?.hide();
+    await customContextMenuWindow.hide();
 });

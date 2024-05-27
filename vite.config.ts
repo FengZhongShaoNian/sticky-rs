@@ -12,7 +12,7 @@ export default defineConfig(async () => ({
       input: {
         index: path.resolve(__dirname, 'main.html'),
         toolbar: path.resolve(__dirname, 'toolbar.html'),
-        'popup-menu': path.resolve(__dirname, 'popup-menu.html'),
+        'context-menu': path.resolve(__dirname, 'context-menu.html'),
       }
     }
   },
