@@ -13,7 +13,7 @@ import {Editor} from "./editor.ts";
 import {CustomEvent} from "../../common/custom-event.ts";
 import {generateContextMenuWindowLabel, generateToolbarWindowLabel} from "../../common/window-label.ts";
 
-let editor: Editor | null;
+const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
 const customContextMenuWindow = createCustomContextMenu();
 
@@ -75,24 +75,22 @@ async function getImageSize(base64Image: string): Promise<LogicalSize> {
     });
 }
 
-async function openImage(imagePath: string): Promise<Editor> {
+async function openImage(imagePath: string) {
     let base64Image = await invoke<string>('read_image', {
         path: imagePath
     });
     let logicalSize = await getImageSize(base64Image);
 
-    editor = new Editor({
-            dataURL: base64Image,
-            width: logicalSize.width,
-            height: logicalSize.height
-        });
-
-    return editor;
+    editor.open({
+        dataURL: base64Image,
+        width: logicalSize.width,
+        height: logicalSize.height
+    });
 }
 
 function createCustomContextMenu() {
     const popupMenuWindowLabel = generateContextMenuWindowLabel(appWindow.label);
-    const size = new LogicalSize(128, 132);
+    const size = new LogicalSize(128, 170);
     return  new WebviewWindow(popupMenuWindowLabel, {
         url: 'context-menu.html',
         width: size.width,
@@ -150,6 +148,11 @@ async function handleCustomContextMenuEvents(){
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
         await appWindow.close();
     });
+
+    await listen(CustomEvent.MENU_OPEN_DEV_TOOLS, async (event) => {
+        await logger.trace(`received ${CustomEvent.MENU_OPEN_DEV_TOOLS} from ${event.windowLabel}`)
+        await invoke('open_devtools', {});
+    });
 }
 
 async function handleToolbarEvents(){
@@ -166,7 +169,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const imagePath = event.payload;
         await logger.info('received imagePath: ' + imagePath);
 
-        editor = await openImage(imagePath);
+        await openImage(imagePath);
         await showToolbarWindow();
     });
 

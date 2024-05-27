@@ -24,6 +24,11 @@ async function closeWindow(){
   await appWindow.hide();
 }
 
+async function openDevTools(){
+  await sendEventToMainWindow(CustomEvent.MENU_OPEN_DEV_TOOLS, {});
+  await appWindow.hide();
+}
+
 </script>
 
 <template>
@@ -32,6 +37,7 @@ async function closeWindow(){
     <div class="menu-item" @click="copyToClipboard">复制到剪切板</div>
     <div class="menu-item" @click="saveToFile">保存到文件</div>
     <div class="menu-item" @click="closeWindow">关闭窗口</div>
+    <div class="menu-item" @click="openDevTools">打开开发者工具</div>
   </div>
 </template>
 
