@@ -10,9 +10,7 @@ export interface ImageInfo{
 export class Editor {
     private _app: App;
     private _editing: boolean;
-    private _toolbarWindow: WebviewWindow;
-
-    constructor(backgroundImage: ImageInfo, toolbarWindow: WebviewWindow) {
+    constructor(backgroundImage: ImageInfo) {
         this._app = new App({
             view: window,
             ground: { type: 'draw' },
@@ -29,15 +27,10 @@ export class Editor {
         });
         this._app.ground.add(backgroundRect);
         this._editing=false;
-        this._toolbarWindow = toolbarWindow;
     }
 
     get editing(): boolean {
         return this._editing;
-    }
-
-    get toolbarWindow(){
-        return this._toolbarWindow;
     }
 }
 

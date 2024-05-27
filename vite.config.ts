@@ -11,7 +11,8 @@ export default defineConfig(async () => ({
     rollupOptions: {
       input: {
         index: path.resolve(__dirname, 'main.html'),
-        nested: path.resolve(__dirname, 'toolbar.html'),
+        toolbar: path.resolve(__dirname, 'toolbar.html'),
+        'popup-menu': path.resolve(__dirname, 'popup-menu.html'),
       }
     }
   },
