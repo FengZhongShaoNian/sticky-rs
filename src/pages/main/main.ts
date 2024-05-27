@@ -146,6 +146,8 @@ async function handleCustomContextMenuEvents(){
 
     await listen(CustomEvent.MENU_CLOSE_WINDOW, async (event) => {
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
+        await toolbarWindow.close();
+        await customContextMenuWindow.close();
         await appWindow.close();
     });
 
