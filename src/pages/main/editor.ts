@@ -35,6 +35,10 @@ export class Editor {
     get editing(): boolean {
         return this._editing;
     }
+
+    get toolbarWindow(){
+        return this._toolbarWindow;
+    }
 }
 
 export class AnnotationTool{
