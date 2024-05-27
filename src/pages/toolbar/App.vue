@@ -12,10 +12,12 @@ import iconPixelartTrace from "../../assets/icons/pixelart-trace.svg?url";
 import iconBlurfx from "../../assets/icons/blurfx.svg?url";
 import iconDrawText from "../../assets/icons/draw-text.svg?url";
 import iconDrawNumber from "../../assets/icons/draw-number.svg?url";
+import iconDrawEraser from "../../assets/icons/draw-eraser.svg?url";
 import iconEditUndo from "../../assets/icons/edit-undo.svg?url";
 import iconEditRedo from "../../assets/icons/edit-redo.svg?url";
 import iconDocumentSave from "../../assets/icons/document-save.svg?url";
 import iconEditCopy from "../../assets/icons/edit-copy.svg?url";
+import iconDialogOK from "../../assets/icons/dialog-ok.svg?url";
 
 import SvgButton from "../../components/SvgButton.vue";
 import {reactive} from "vue";
@@ -31,10 +33,12 @@ const buttons = reactive([
   {checkable: true, checked: false, title: 'blur', icon: iconBlurfx},
   {checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
   {checkable: true, checked: false, title: 'draw number', icon: iconDrawNumber},
+  {checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
   {checkable: false, checked: false, title: 'undo', icon: iconEditUndo},
   {checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
   {checkable: false, checked: false, title: 'save', icon: iconDocumentSave},
   {checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
+  {checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
 ]);
 
 function onButtonClicked(buttonIndex: number){

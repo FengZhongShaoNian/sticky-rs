@@ -18,7 +18,7 @@ const marginMainWindowBottom = 10;
 async function createToolbarWindow() {
     const toolbarWindowLabel = appWindow.label + "-toolbar";
 
-    const toolbarSize = new LogicalSize(500, 34);
+    const toolbarSize = new LogicalSize(548, 34);
 
     let toolbarWindow = new WebviewWindow(toolbarWindowLabel, {
         url: 'toolbar.html',
