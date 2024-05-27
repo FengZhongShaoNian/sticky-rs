@@ -21,6 +21,12 @@ import iconDialogOK from "../../assets/icons/dialog-ok.svg?url";
 
 import SvgButton from "../../components/SvgButton.vue";
 import {reactive} from "vue";
+import {getMainWindowLabel} from "../../common/window-label.ts";
+import {WebviewWindow} from "@tauri-apps/api/window";
+import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
+
+const mainWindowLabel = getMainWindowLabel();
+const mainWindow = WebviewWindow.getByLabel(mainWindowLabel);
 
 const buttons = reactive([
   {checkable: true, checked: false, title: 'draw rectangle', icon: iconDrawRectangle},
@@ -41,8 +47,11 @@ const buttons = reactive([
   {checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
 ]);
 
-function onButtonClicked(buttonIndex: number){
+async function onButtonClicked(buttonIndex: number){
   let targetButton = buttons[buttonIndex];
+  if(targetButton.checkable && targetButton.checked){
+    return
+  }
   if(targetButton.checkable){
     targetButton.checked = true;
     for (let i = 0; i < buttons.length; i++) {
@@ -52,6 +61,7 @@ function onButtonClicked(buttonIndex: number){
     }
   }
 
+  await sendEventToMainWindow(CustomEvent.TOOLBAR_BUTTON_CLICK, targetButton.title);
 }
 </script>
 

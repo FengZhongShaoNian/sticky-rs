@@ -152,6 +152,13 @@ async function handleCustomContextMenuEvents(){
     });
 }
 
+async function handleToolbarEvents(){
+    await listen(CustomEvent.TOOLBAR_BUTTON_CLICK, async (event) => {
+        await logger.trace(`received ${CustomEvent.TOOLBAR_BUTTON_CLICK} from ${event.windowLabel}`)
+        // TODO
+    });
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     await logger.info('DOMContentLoaded').catch(console.error);
 
@@ -171,6 +178,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     await logger.info('pageLoaded event sent');
 
     await handleCustomContextMenuEvents();
+    await handleToolbarEvents();
 });
 
 document.addEventListener('contextmenu', async (event) => {

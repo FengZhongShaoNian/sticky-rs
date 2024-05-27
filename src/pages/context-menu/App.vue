@@ -2,18 +2,8 @@
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 
-import {CustomEvent} from "../../common/custom-event.ts";
+import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
 import {appWindow, WebviewWindow} from "@tauri-apps/api/window";
-import logger from "../../common/logger.ts";
-import {getMainWindowLabel} from "../../common/window-label.ts";
-
-const mainWindowLabel: string = getMainWindowLabel();
-const mainWindow = WebviewWindow.getByLabel(mainWindowLabel);
-
-async function sendEventToMainWindow(event: string, payload: any){
-  await mainWindow?.emit(event, payload);
-  await logger.trace(`sent ${event} to ${mainWindowLabel}`);
-}
 
 async function toggleToolbar(){
   await sendEventToMainWindow(CustomEvent.MENU_TOGGLE_TOOLBAR, {});
@@ -38,7 +28,7 @@ async function closeWindow(){
 
 <template>
   <div class="container">
-    <div class="menu-item" @click="toggleToolbar">显示工具条</div>
+    <div class="menu-item" @click="toggleToolbar">显示/隐藏工具条</div>
     <div class="menu-item" @click="copyToClipboard">复制到剪切板</div>
     <div class="menu-item" @click="saveToFile">保存到文件</div>
     <div class="menu-item" @click="closeWindow">关闭窗口</div>
@@ -54,7 +44,7 @@ async function closeWindow(){
 }
 
 .container .menu-item {
-  padding: 5px 15px;
+  padding: 5px 5px;
   color: #eff0f1;
   cursor: pointer;
 }
