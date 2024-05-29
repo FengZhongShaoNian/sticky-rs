@@ -18,6 +18,16 @@ const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
 const customContextMenuWindow = createCustomContextMenu();
 
+editor.addZoomEventListener((zoomEvent)=>{
+    const logicalSize = new LogicalSize(zoomEvent.width, zoomEvent.height)
+    invoke('set_fixed_size', {
+        logicalSize: logicalSize
+    }).then(()=>{
+        console.log('window.innerWidth after zoom:', window.innerWidth)
+        console.log('window.innerHeight after zoom:', window.innerHeight)
+    });
+});
+
 // Toolbar窗口顶部距离主窗口底部的距离
 const marginMainWindowBottom = 10;
 

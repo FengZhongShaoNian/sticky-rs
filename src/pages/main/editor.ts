@@ -1,6 +1,5 @@
-import {App, Group, Rect} from "leafer-ui";
+import {Group, Leafer, Rect} from "leafer-ui";
 import {UndoRedoStack} from "./ui-container.ts";
-import {RectangleTool} from "./tools/rectangle-tool.ts";
 import {AbstractAnnotationTool} from "./tools/abstract-annotation-tool.ts";
 import {EllipseTool} from "./tools/ellipse-tool.ts";
 
@@ -28,22 +27,27 @@ export interface ImageInfo {
     height: number
 }
 
+interface ZoomEvent {
+    width: number,
+    height: number
+}
+
+type ZoomEventListener = (zoomEvent: ZoomEvent) => void;
+
 export class Editor {
-    private readonly app: App;
+    private readonly leafer: Leafer;
     private undoRedoStack: UndoRedoStack;
     private editing: boolean;
     private annotationTool: AbstractAnnotationTool;
+    private zoomEventListeners: Set<ZoomEventListener> = new Set<ZoomEventListener>();
 
     constructor() {
-        this.app = new App({
-            view: window,
-            ground: {type: 'draw'},
-            tree: {},
-            sky: {type: 'draw'}
+        this.leafer = new Leafer({
+            view: window, type: 'draw'
         });
 
         const group = new Group();
-        this.app.sky.add(group);
+        this.leafer.add(group);
         this.undoRedoStack = new UndoRedoStack(group);
 
         this.editing = false;
@@ -52,29 +56,54 @@ export class Editor {
 
     open(image: ImageInfo) {
         const backgroundRect = new Rect({
-            width: image.width,
-            height: image.height,
-            fill: {
-                type: 'image',
-                url: image.dataURL,
+            width: image.width, height: image.height, fill: {
+                type: 'image', url: image.dataURL,
             }
         });
-        this.app.ground.add(backgroundRect);
+        this.leafer.add(backgroundRect);
 
         this.editing = true;
         disableDragRegion();
-        this.annotationTool.active();
+        // this.annotationTool.active();
+
+        getTouchpad().addEventListener('wheel', (event) => {
+            if(!this.editing){
+                // 以窗口中心为原点进行缩放
+                const center = {
+                    x: window.innerWidth / 2, y: window.innerHeight / 2
+                }
+                if (event.deltaY < 0) {
+                    this.leafer.scaleOfWorld(center, 1.1);
+                } else {
+                    this.leafer.scaleOfWorld(center, 0.9);
+                }
+                // 缩放后移动画布左上角的位置到窗口的(0,0)，同时调整视口的大小，从而使得之前放大后被遮掩的内容显示出来
+                this.leafer.x = 0;
+                this.leafer.y = 0;
+                this.leafer.width = this.leafer.worldBoxBounds.width;
+                this.leafer.height = this.leafer.worldBoxBounds.height;
+                this.zoomEventListeners.forEach(listener => {
+                    listener({
+                        width: this.leafer.worldBoxBounds.width, height: this.leafer.worldBoxBounds.height
+                    });
+                });
+            }
+        });
     }
 
     isEditing(): boolean {
         return this.editing;
     }
 
-    undo(){
+    addZoomEventListener(listener: ZoomEventListener) {
+        this.zoomEventListeners.add(listener);
+    }
+
+    undo() {
         this.undoRedoStack.undoAdd();
     }
 
-    redo(){
+    redo() {
         this.undoRedoStack.redoAdd();
     }
 }
