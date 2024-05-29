@@ -2,6 +2,7 @@ import {App, Group, Rect} from "leafer-ui";
 import {UndoRedoStack} from "./ui-container.ts";
 import {RectangleTool} from "./tools/rectangle-tool.ts";
 import {AbstractAnnotationTool} from "./tools/abstract-annotation-tool.ts";
+import {EllipseTool} from "./tools/ellipse-tool.ts";
 
 function disableDragRegion() {
     const element = document.getElementById('drag-region');
@@ -46,7 +47,7 @@ export class Editor {
         this.undoRedoStack = new UndoRedoStack(group);
 
         this.editing = false;
-        this.annotationTool = new RectangleTool(this.undoRedoStack, getTouchpad());
+        this.annotationTool = new EllipseTool(this.undoRedoStack, getTouchpad());
     }
 
     open(image: ImageInfo) {

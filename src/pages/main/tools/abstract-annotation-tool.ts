@@ -1,19 +1,11 @@
 import {UIContainer} from "../ui-container.ts";
-import {UI} from "leafer-ui";
+import {Rect, UI} from "leafer-ui";
+import {CrossHair} from "../cursor.ts";
+import {ToolName} from "../../../common/tool-name.ts";
 
 export interface StyleContext {
     strokeWidth: number,
     strokeColor: string,
-}
-
-/**
- * 判断鼠标事件中鼠标的左键是否处于被按下的状态
- *
- * @param mouseEvent 鼠标事件
- */
-export function mouseLeftButtonIsPressed(mouseEvent: MouseEvent) {
-    const LEFT_BUTTON = 1;
-    return mouseEvent.buttons == LEFT_BUTTON;
 }
 
 type MouseEventListener = (event: MouseEvent) => void;
@@ -50,21 +42,52 @@ export abstract class AbstractAnnotationTool {
 
     abstract onMouseMove(mouseMoveEvent: MouseEvent): void;
 
-    abstract onMouseUp(mouseUpEvent: MouseEvent): void;
+    onMouseUp(_mouseUpEvent: MouseEvent){
+    }
 
-    abstract onWheel(wheelEvent: WheelEvent): void;
+    onWheel(wheelEvent: WheelEvent): void {
+        const MIN_STROKE_WIDTH = 1;
+        const MAX_STROKE_WIDTH = 10;
+
+        // 向上滚动
+        let scrollUp = wheelEvent.deltaY < 0;
+        if(scrollUp){
+            this.styleContext.strokeWidth += 1;
+            if(this.styleContext.strokeWidth > MAX_STROKE_WIDTH){
+                this.styleContext.strokeWidth = MAX_STROKE_WIDTH;
+            }
+        }else {
+            this.styleContext.strokeWidth -= 1;
+            if(this.styleContext.strokeWidth < MIN_STROKE_WIDTH){
+                this.styleContext.strokeWidth = MIN_STROKE_WIDTH;
+            }
+        }
+    }
 
     /**
      * 激活标注工具
      */
     active(): void {
+        const LEFT_BUTTON = 1;
         this.mouseDownEventListener = (event) => {
+            const isTheLeftMouseButtonPressed = (event.buttons == LEFT_BUTTON);
+            if (!isTheLeftMouseButtonPressed) {
+                return;
+            }
             this.onMouseDown(event);
         }
         this.mouseMoveEventListener = (event) => {
+            const isTheLeftMouseButtonPressed = (event.buttons == LEFT_BUTTON);
+            if (!isTheLeftMouseButtonPressed) {
+                return;
+            }
             this.onMouseMove(event);
         }
         this.mouseUpEventListener = (event) => {
+            const isTheLeftMouseButton = (event.buttons == LEFT_BUTTON);
+            if (!isTheLeftMouseButton) {
+                return;
+            }
             this.onMouseUp(event);
         }
         this.wheelEventListener = (event) => {
