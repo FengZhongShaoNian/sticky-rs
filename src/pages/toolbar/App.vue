@@ -24,27 +24,28 @@ import {reactive} from "vue";
 import {getMainWindowLabel} from "../../common/window-label.ts";
 import {WebviewWindow} from "@tauri-apps/api/window";
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
+import {ToolName} from "../../common/tool-name.ts";
 
 const mainWindowLabel = getMainWindowLabel();
 const mainWindow = WebviewWindow.getByLabel(mainWindowLabel);
 
 const buttons = reactive([
-  {checkable: true, checked: false, title: 'draw rectangle', icon: iconDrawRectangle},
-  {checkable: true, checked: false, title: 'draw ellipse', icon: iconDrawEllipse},
-  {checkable: true, checked: false, title: 'draw line', icon: iconDrawLine},
-  {checkable: true, checked: false, title: 'draw arrow', icon: iconDrawArrow},
-  {checkable: true, checked: false, title: 'draw freehand', icon: iconDrawFreehand},
-  {checkable: true, checked: false, title: 'draw highlight', icon: iconDrawHighlight},
-  {checkable: true, checked: false, title: 'mosaic', icon: iconPixelartTrace},
-  {checkable: true, checked: false, title: 'blur', icon: iconBlurfx},
-  {checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
-  {checkable: true, checked: false, title: 'draw number', icon: iconDrawNumber},
-  {checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
-  {checkable: false, checked: false, title: 'undo', icon: iconEditUndo},
-  {checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
-  {checkable: false, checked: false, title: 'save', icon: iconDocumentSave},
-  {checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
-  {checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
+  {toolName: "", checkable: true, checked: false, title: 'draw rectangle', icon: iconDrawRectangle},
+  {toolName: "", checkable: true, checked: false, title: 'draw ellipse', icon: iconDrawEllipse},
+  {toolName: "", checkable: true, checked: false, title: 'draw line', icon: iconDrawLine},
+  {toolName: "", checkable: true, checked: false, title: 'draw arrow', icon: iconDrawArrow},
+  {toolName: "", checkable: true, checked: false, title: 'draw freehand', icon: iconDrawFreehand},
+  {toolName: "", checkable: true, checked: false, title: 'draw highlight', icon: iconDrawHighlight},
+  {toolName: "", checkable: true, checked: false, title: 'mosaic', icon: iconPixelartTrace},
+  {toolName: "", checkable: true, checked: false, title: 'blur', icon: iconBlurfx},
+  {toolName: "", checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
+  {toolName: "", checkable: true, checked: false, title: 'draw number', icon: iconDrawNumber},
+  {toolName: "", checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
+  {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: 'undo', icon: iconEditUndo},
+  {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
+  {toolName: "", checkable: false, checked: false, title: 'save', icon: iconDocumentSave},
+  {toolName: "", checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
+  {toolName: "", checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
 ]);
 
 async function onButtonClicked(buttonIndex: number){
@@ -61,7 +62,7 @@ async function onButtonClicked(buttonIndex: number){
     }
   }
 
-  await sendEventToMainWindow(CustomEvent.TOOLBAR_BUTTON_CLICK, targetButton.title);
+  await sendEventToMainWindow(CustomEvent.TOOLBAR_BUTTON_CLICK, targetButton.toolName);
 }
 </script>
 

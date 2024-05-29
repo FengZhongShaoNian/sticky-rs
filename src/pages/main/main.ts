@@ -12,6 +12,7 @@ import logger from "../../common/logger.ts";
 import {Editor} from "./editor.ts";
 import {CustomEvent} from "../../common/custom-event.ts";
 import {generateContextMenuWindowLabel, generateToolbarWindowLabel} from "../../common/window-label.ts";
+import {ToolName} from "../../common/tool-name.ts";
 
 const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
@@ -159,7 +160,16 @@ async function handleCustomContextMenuEvents(){
 
 async function handleToolbarEvents(){
     await listen(CustomEvent.TOOLBAR_BUTTON_CLICK, async (event) => {
-        await logger.trace(`received ${CustomEvent.TOOLBAR_BUTTON_CLICK} from ${event.windowLabel}`)
+        await logger.trace(`received ${CustomEvent.TOOLBAR_BUTTON_CLICK} from ${event.windowLabel}, payload: ${event.payload}`)
+
+        const toolName = event.payload;
+        await logger.trace(`${toolName} clicked`)
+
+        if(toolName === ToolName.UNDO_TOOL){
+            editor.undo();
+        }else if(toolName === ToolName.REDO_TOOL){
+            editor.redo();
+        }
         // TODO
     });
 }
