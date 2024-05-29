@@ -37,6 +37,7 @@ function createToolbarWindow() {
         url: 'toolbar.html',
         width: toolbarSize.width,
         height: toolbarSize.height,
+        // https://github.com/tauri-apps/tao/issues/561
         // 不知道为啥Tauri的resizable设置为false会导致窗口大小不对
         // 这里通过设置最大尺寸和最小尺寸来避免调整窗口大小
         minWidth: toolbarSize.width,
@@ -96,6 +97,7 @@ function createCustomContextMenu() {
         url: 'context-menu.html',
         width: size.width,
         height: size.height,
+        // https://github.com/tauri-apps/tao/issues/561
         // 不知道为啥Tauri的resizable设置为false会导致窗口大小不对
         // 这里通过设置最大尺寸和最小尺寸来避免调整窗口大小
         minWidth: size.width,

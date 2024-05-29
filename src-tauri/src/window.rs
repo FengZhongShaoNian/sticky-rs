@@ -1,6 +1,6 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
 use log::{info, trace, warn};
-use tauri::{App, AppHandle, LogicalSize, Manager, PhysicalSize};
+use tauri::{App, AppHandle, LogicalSize, Manager, PhysicalSize, Window};
 use crate::events;
 use crate::image_io::get_image_size;
 
@@ -11,6 +11,19 @@ static MAIN_WINDOW_COUNTER: AtomicUsize = AtomicUsize::new(0);
 #[tauri::command]
 pub fn open_devtools(window: tauri::Window) {
     window.open_devtools();
+}
+
+#[tauri::command]
+pub fn set_fixed_size(window: tauri::Window, logical_size: LogicalSize<f64>){
+    set_fixed_size_with_ref(&window, logical_size);
+}
+
+fn set_fixed_size_with_ref(window: &Window, logical_size: LogicalSize<f64>) {
+    window.set_size(logical_size).unwrap();
+    // 由于通过resizeable=false来限制窗口的大小存在bug（https://github.com/tauri-apps/tao/issues/561）
+    // 所以这里通过设置最大尺寸和最小尺寸来避免调整窗口大小
+    window.set_min_size(Some(logical_size)).unwrap();
+    window.set_max_size(Some(logical_size)).unwrap();
 }
 
 pub fn create_main_window(handle: &AppHandle, image_path: String) {
@@ -43,7 +56,7 @@ fn create_main_window_with_initial_window_size(handle: &AppHandle, image_path: S
 
     let scale_factor = main_window.scale_factor().unwrap();
     let logical_size: LogicalSize<f64> = initial_window_size.to_logical(scale_factor);
-    main_window.set_size(logical_size).unwrap();
+    set_fixed_size_with_ref(&main_window, logical_size);
     main_window.show().unwrap();
 
 
