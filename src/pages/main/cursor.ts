@@ -182,7 +182,7 @@ interface CircleNumberStyle {
 // 带圆圈的数字光标
 export class CircleNumber extends Cursor {
 
-    private _style: CircleNumberStyle;
+    private readonly _style: CircleNumberStyle;
     private _diameter: number;
 
     constructor(cursorEffectElement: HTMLElement, style?: CircleNumberStyle) {
@@ -202,7 +202,7 @@ export class CircleNumber extends Cursor {
             this._style = new Proxy(style, handler);
         }else {
             this._style = new Proxy({
-                num: 123,
+                num: 1,
                 strokeWidth: 0,
                 strokeColor: 'red',
                 fillColor: 'red',
@@ -290,4 +290,7 @@ export class CircleNumber extends Cursor {
         this.mouse.style.height = this._diameter + 'px';
     }
 
+    get style(){
+        return this._style;
+    }
 }
