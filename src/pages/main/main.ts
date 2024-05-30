@@ -220,7 +220,7 @@ async function saveImageFile(base64EncodedImage: string){
         }]
     });
     if(filePath){
-        if(filePath.endsWith('.png')){
+        if(!filePath.endsWith('.png')){
             filePath = filePath + '.png';
         }
         return invoke('write_image', {
