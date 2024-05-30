@@ -3,6 +3,9 @@ import {UndoRedoStack} from "./ui-container.ts";
 import {AbstractAnnotationTool} from "./tools/abstract-annotation-tool.ts";
 import {EllipseTool} from "./tools/ellipse-tool.ts";
 import {RectangleTool} from "./tools/rectangle-tool.ts";
+import {StraightLineTool} from "./tools/straight-line-tool.ts";
+import {FreeCurveTool} from "./tools/free-curve-tool.ts";
+import {MarkerPenTool} from "./tools/marker-pen-tool.ts";
 
 function disableDragRegion() {
     const element = document.getElementById('drag-region');
@@ -63,6 +66,9 @@ export class Editor {
 
         this.registerAnnotationTool(new RectangleTool(this.undoRedoStack, getTouchpad()));
         this.registerAnnotationTool(new EllipseTool(this.undoRedoStack, getTouchpad()));
+        this.registerAnnotationTool(new StraightLineTool(this.undoRedoStack, getTouchpad()));
+        this.registerAnnotationTool(new FreeCurveTool(this.undoRedoStack, getTouchpad()));
+        this.registerAnnotationTool(new MarkerPenTool(this.undoRedoStack, getTouchpad()));
 
         this.zoomEventListeners = new Set<ZoomEventListener>();
     }

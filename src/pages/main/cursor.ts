@@ -159,6 +159,89 @@ export class CrossHair extends Cursor {
     }
 }
 
+// 圆形光标的样式
+interface CircleStyle {
+    // 直径
+    diameter: number,
+    // 圆圈的线条宽度
+    strokeWidth: number,
+    // 圆圈的线条颜色
+    strokeColor: string,
+    // 圆圈的填充颜色
+    fillColor: string,
+}
+
+// 圆形光标
+export class Circle extends Cursor{
+    private readonly _style: CircleStyle;
+
+    constructor(cursorEffectElement: HTMLElement, style?: CircleStyle) {
+        super(cursorEffectElement);
+
+        const cursor = this;
+        const handler: ProxyHandler<CircleStyle> = {
+            get(target: CircleStyle, propKey: string) {
+                return Reflect.get(target, propKey);
+            },
+            set(target: CircleStyle, propKey: string , newValue: any) {
+                Reflect.set(target, propKey, newValue);
+                cursor.updateCursorShape();
+                return true;
+            }
+        };
+        if(style){
+            this._style = new Proxy(style, handler);
+        }else {
+            this._style = new Proxy({
+                diameter: 10,
+                strokeWidth: 0,
+                strokeColor: 'red',
+                fillColor: 'red',
+            }, handler);
+        }
+    }
+
+    getShape() {
+        const radius = this._style.diameter/2;
+        return `
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <circle
+              cx="${radius}"
+              cy="${radius}"
+              r="${radius}"
+              fill="${this._style.fillColor}"
+              stroke="${this._style.strokeColor}"
+              stroke-width="${this._style.strokeWidth}" 
+            />
+          </svg>
+    `;
+    }
+
+    calculateCursorLeftTopPos(event: MouseEvent): CursorLeftTopPos {
+        const left = (event.pageX - this._style.diameter / 2);
+        const top = (event.pageY - this._style.diameter / 2);
+        return {
+            left, top
+        }
+    }
+
+    updateCursorShape(): void {
+        const shape = this.getShape();
+        console.log('Circle shape:', shape);
+
+        const encoded = btoa(shape);
+        const dataURL = `data:image/svg+xml;base64,${encoded}`
+
+        this.mouse.style.background = `url(${dataURL}) no-repeat center center`;
+        this.mouse.style.width = this._style.diameter + 'px';
+        this.mouse.style.height = this._style.diameter + 'px';
+    }
+
+    get style(){
+        return this._style;
+    }
+}
+
 // 带圆圈的数字光标的样式
 interface CircleNumberStyle {
     // 圆圈中的数字
