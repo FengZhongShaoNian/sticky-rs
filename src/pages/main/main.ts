@@ -14,6 +14,7 @@ import {Editor} from "./editor.ts";
 import {CustomEvent} from "../../common/custom-event.ts";
 import {generateContextMenuWindowLabel, generateToolbarWindowLabel} from "../../common/window-label.ts";
 import {ToolName} from "../../common/tool-name.ts";
+import {save} from "@tauri-apps/api/dialog";
 
 const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
@@ -183,17 +184,43 @@ async function handleToolbarEvents(){
         }else if(toolName === ToolName.REDO_TOOL){
             editor.redo();
         }else if(toolName === ToolName.COPY_TOOL){
-            editor.exportImage().then(exportResult => {
-                console.log('export result:', exportResult);
+            editor.exportPngImage().then(exportResult => {
+                console.log('exportPngImage result:', exportResult);
                 const dataURL = exportResult.data;
                 const base64 = dataURL.split(',')[1];
                 return clipboard.writeImageBase64(base64);
             }).catch(console.error);
-        }else {
+        } else if(toolName === ToolName.SAVE_TOOL){
+            editor.exportPngImage().then(exportResult => {
+                console.log('exportPngImage result:', exportResult);
+                const dataURL = exportResult.data;
+                const base64 = dataURL.split(',')[1];
+                return saveImageFile(base64);
+            }).catch(console.error);
+        }
+        else {
             editor.activeTool(toolName);
         }
         // TODO
     });
+}
+
+async function saveImageFile(base64EncodedImage: string){
+    let filePath = await save({
+        filters: [{
+            name: 'Image',
+            extensions: ['png']
+        }]
+    });
+    if(filePath){
+        if(filePath.endsWith('.png')){
+            filePath = filePath + '.png';
+        }
+        return invoke('write_image', {
+            path: filePath,
+            base64EncodedImage
+        });
+    }
 }
 
 document.addEventListener("DOMContentLoaded", async function () {

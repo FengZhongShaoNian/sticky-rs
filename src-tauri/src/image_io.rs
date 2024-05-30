@@ -31,6 +31,12 @@ pub fn read_image(path: &str) -> Result<DataURL, String> {
     };
 }
 
+#[tauri::command]
+pub fn write_image(path: &str, base64_encoded_image: &str) -> Result<(),String> {
+    let content = BASE64_STANDARD.decode(base64_encoded_image).map_err(|err| err.to_string())?;
+    std::fs::write(path, content).map_err(|err| err.to_string())
+}
+
 /// Get size (width and height) of the image
 pub fn get_image_size(path: &str) -> Result<ImageSize, String> {
     match read_image_dimensions(path) {

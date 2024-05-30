@@ -23,5 +23,6 @@ export enum ToolName {
 
     UNDO_TOOL = "UndoTool",
     REDO_TOOL = "RedoTool",
-    COPY_TOOL = "CopyTool"
+    COPY_TOOL = "CopyTool",
+    SAVE_TOOL = "SaveTool"
 }

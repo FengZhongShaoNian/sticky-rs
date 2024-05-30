@@ -9,7 +9,7 @@ use clap::Parser;
 use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri_plugin_log::LogTarget;
 
-use crate::image_io::read_image;
+use crate::image_io::{read_image, write_image};
 use crate::window::{create_main_window, open_devtools, set_fixed_size};
 
 mod events;
@@ -71,7 +71,7 @@ fn main() {
                 _ => {}
             }
         })
-        .invoke_handler(tauri::generate_handler![open_devtools,set_fixed_size,read_image])
+        .invoke_handler(tauri::generate_handler![open_devtools,set_fixed_size,read_image,write_image])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

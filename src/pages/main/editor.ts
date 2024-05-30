@@ -110,7 +110,7 @@ export class Editor {
         });
     }
 
-    exportImage(){
+    exportPngImage(){
         return this.leafer.export('png', { screenshot: true, pixelRatio: 2 });
     }
 
