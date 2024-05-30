@@ -12,8 +12,8 @@ export class MarkerPenTool extends AbstractAnnotationTool {
 
     constructor(container: UIContainer, touchpad: HTMLElement) {
         super(container, touchpad);
-        this.styleContext.strokeWidth = 10;
-        this.styleContext.strokeColor = 'rgba(255,0,0,0.5)';
+        this.styleContext.strokeWidth = 20;
+        this.styleContext.strokeColor = 'rgba(255,0,0,0.3)';
 
         this.customCursor = new Circle(touchpad);
         this.customCursor.style.diameter = this.styleContext.strokeWidth;
