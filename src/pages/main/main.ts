@@ -143,7 +143,7 @@ async function handleCustomContextMenuEvents(){
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
         const visible = await toolbarWindow.isVisible();
         if(visible){
-            await toolbarWindow.hide();
+            await exitEditModeAndHideToolbar();
         }else {
             await showToolbarWindow();
         }
@@ -197,12 +197,19 @@ async function handleToolbarEvents(){
                 const base64 = dataURL.split(',')[1];
                 return saveImageFile(base64);
             }).catch(console.error);
+        }else if(toolName === ToolName.OK_TOOL){
+            exitEditModeAndHideToolbar().catch(console.error);
         }
         else {
             editor.activeTool(toolName);
         }
         // TODO
     });
+}
+
+async function exitEditModeAndHideToolbar(){
+    editor.exitEditMode();
+    await toolbarWindow.hide();
 }
 
 async function saveImageFile(base64EncodedImage: string){

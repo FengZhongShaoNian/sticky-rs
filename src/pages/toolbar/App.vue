@@ -20,7 +20,7 @@ import iconEditCopy from "../../assets/icons/edit-copy.svg?url";
 import iconDialogOK from "../../assets/icons/dialog-ok.svg?url";
 
 import SvgButton from "../../components/SvgButton.vue";
-import {reactive} from "vue";
+import {onMounted, reactive} from "vue";
 import {getMainWindowLabel} from "../../common/window-label.ts";
 import {WebviewWindow} from "@tauri-apps/api/window";
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
@@ -45,7 +45,7 @@ const buttons = reactive([
   {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
   {toolName: ToolName.SAVE_TOOL, checkable: false, checked: false, title: 'save', icon: iconDocumentSave},
   {toolName: ToolName.COPY_TOOL, checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
-  {toolName: "", checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
+  {toolName: ToolName.OK_TOOL, checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
 ]);
 
 async function onButtonClicked(buttonIndex: number){
@@ -64,6 +64,21 @@ async function onButtonClicked(buttonIndex: number){
 
   await sendEventToMainWindow(CustomEvent.TOOLBAR_BUTTON_CLICK, targetButton.toolName);
 }
+
+function resetButtons(){
+  for (let i = 0; i < buttons.length; i++) {
+    buttons[i].checked = false;
+  }
+}
+
+onMounted(()=>{
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      resetButtons();
+    }
+  });
+})
+
 </script>
 
 <template>

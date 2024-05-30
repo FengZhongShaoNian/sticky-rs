@@ -10,13 +10,17 @@ import {NumberTool} from "./tools/number-tool.ts";
 import {ArrowTool} from "./tools/arrow-tool.ts";
 
 function disableDragRegion() {
+    console.log('disable drag region');
     const element = document.getElementById('drag-region');
+    console.log('drag-region element', element);
     (element as HTMLDivElement).style.display = "none";
 }
 
 function enableDragRegion() {
+    console.log('enable drag region');
     const element = document.getElementById('drag-region');
-    (element as HTMLDivElement).style.display = "absolute";
+    console.log('drag-region element', element);
+    (element as HTMLDivElement).removeAttribute("style");
 }
 
 function getTouchpad() {
