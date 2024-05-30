@@ -328,6 +328,24 @@ export class CircleNumber extends Cursor {
        `;
     }
 
+    getSVG(){
+        const textMetrics = this.detectTextWidth();
+        const shape = this.getShape(textMetrics);
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(shape, "image/svg+xml");
+
+        // 获取解析后的SVG根元素
+        const svgElement = svgDoc.documentElement;
+        svgElement.setAttribute('width', `${this._diameter}`);
+        svgElement.setAttribute('height', `${this._diameter}`);
+
+        // 创建一个XMLSerializer实例
+        const serializer = new XMLSerializer();
+
+        // 序列化SVG内容为字符串
+        return serializer.serializeToString(svgElement);
+    }
+
     // 计算圆圈的直径
     private calculateDiameter(textMetrics: TextMetrics) {
         const textWidth = textMetrics.actualBoundingBoxRight + textMetrics.actualBoundingBoxLeft;
@@ -375,5 +393,9 @@ export class CircleNumber extends Cursor {
 
     get style(){
         return this._style;
+    }
+
+    get diameter(): number {
+        return this._diameter;
     }
 }
