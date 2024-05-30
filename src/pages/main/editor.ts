@@ -7,6 +7,7 @@ import {StraightLineTool} from "./tools/straight-line-tool.ts";
 import {FreeCurveTool} from "./tools/free-curve-tool.ts";
 import {MarkerPenTool} from "./tools/marker-pen-tool.ts";
 import {NumberTool} from "./tools/number-tool.ts";
+import {ArrowTool} from "./tools/arrow-tool.ts";
 
 function disableDragRegion() {
     const element = document.getElementById('drag-region');
@@ -71,6 +72,7 @@ export class Editor {
         this.registerAnnotationTool(new FreeCurveTool(this.undoRedoStack, getTouchpad()));
         this.registerAnnotationTool(new MarkerPenTool(this.undoRedoStack, getTouchpad()));
         this.registerAnnotationTool(new NumberTool(this.undoRedoStack, getTouchpad()));
+        this.registerAnnotationTool(new ArrowTool(this.undoRedoStack, getTouchpad()));
 
         this.zoomEventListeners = new Set<ZoomEventListener>();
     }

@@ -1,7 +1,3 @@
-import {EllipseTool} from "../pages/main/tools/ellipse-tool.ts";
-import {MarkerPenTool} from "../pages/main/tools/marker-pen-tool.ts";
-import {NumberTool} from "../pages/main/tools/number-tool.ts";
-
 export enum ToolName {
     // 矩形工具
     RECTANGLE_TOOL = "RectangleTool",
@@ -20,6 +16,9 @@ export enum ToolName {
 
     // 数字工具
     NUMBER_TOOL = "NumberTool",
+
+    // 箭头工具
+    ARROW_TOOL = "ArrowTool",
 
 
     UNDO_TOOL = "UndoTool",
