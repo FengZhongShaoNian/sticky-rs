@@ -8,6 +8,7 @@ import {
     WebviewWindow
 } from "@tauri-apps/api/window";
 import {invoke} from '@tauri-apps/api/tauri';
+import clipboard from "tauri-plugin-clipboard-api";
 import logger from "../../common/logger.ts";
 import {Editor} from "./editor.ts";
 import {CustomEvent} from "../../common/custom-event.ts";
@@ -181,6 +182,13 @@ async function handleToolbarEvents(){
             editor.undo();
         }else if(toolName === ToolName.REDO_TOOL){
             editor.redo();
+        }else if(toolName === ToolName.COPY_TOOL){
+            editor.exportImage().then(exportResult => {
+                console.log('export result:', exportResult);
+                const dataURL = exportResult.data;
+                const base64 = dataURL.split(',')[1];
+                return clipboard.writeImageBase64(base64);
+            }).catch(console.error);
         }else {
             editor.activeTool(toolName);
         }

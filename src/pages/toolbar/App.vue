@@ -44,7 +44,7 @@ const buttons = reactive([
   {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: 'undo', icon: iconEditUndo},
   {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
   {toolName: "", checkable: false, checked: false, title: 'save', icon: iconDocumentSave},
-  {toolName: "", checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
+  {toolName: ToolName.COPY_TOOL, checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
   {toolName: "", checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
 ]);
 

@@ -110,6 +110,10 @@ export class Editor {
         });
     }
 
+    exportImage(){
+        return this.leafer.export('png', { screenshot: true, pixelRatio: 2 });
+    }
+
     isEditing(): boolean {
         return this.editing;
     }

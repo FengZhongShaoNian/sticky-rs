@@ -14,6 +14,9 @@ importers:
       leafer-ui:
         specifier: 1.0.0-rc.22
         version: 1.0.0-rc.22
+      tauri-plugin-clipboard-api:
+        specifier: ^0.6.10
+        version: 0.6.10
       tauri-plugin-log-api:
         specifier: github:tauri-apps/tauri-plugin-log#v1
         version: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657
@@ -710,6 +713,9 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
+  tauri-plugin-clipboard-api@0.6.10:
+    resolution: {integrity: sha512-oIHROcKigNqZnEXeewua30Flx3YEiGhB2khEJ/hXwHmln6RXzlOpIAznkbb6Aq8l4F69LJ6Pr9vb7AUGG/I8XQ==}
+
   tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657:
     resolution: {tarball: https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657}
     version: 0.0.0
@@ -717,6 +723,9 @@ packages:
   to-fast-properties@2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
+
+  tslib@2.6.2:
+    resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
   typescript@5.4.5:
     resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
@@ -775,6 +784,9 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
 snapshots:
 
@@ -1495,11 +1507,19 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.0.1
 
+  tauri-plugin-clipboard-api@0.6.10:
+    dependencies:
+      '@tauri-apps/api': 1.5.6
+      tslib: 2.6.2
+      zod: 3.23.8
+
   tauri-plugin-log-api@https://codeload.github.com/tauri-apps/tauri-plugin-log/tar.gz/752531f21f626c9f9f1716a28c4a37054c679657:
     dependencies:
       '@tauri-apps/api': 1.5.3
 
   to-fast-properties@2.0.0: {}
+
+  tslib@2.6.2: {}
 
   typescript@5.4.5: {}
 
@@ -1540,3 +1560,5 @@ snapshots:
       '@vue/shared': 3.4.27
     optionalDependencies:
       typescript: 5.4.5
+
+  zod@3.23.8: {}

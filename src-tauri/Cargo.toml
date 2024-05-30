@@ -20,6 +20,7 @@ clap = { version = "4.5.4", features = ["derive"] }
 base64 = "0.22.1"
 image = "0.25.1"
 log = "^0.4"
+tauri-plugin-clipboard = "0.6.10"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

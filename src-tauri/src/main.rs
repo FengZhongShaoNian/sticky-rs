@@ -47,6 +47,7 @@ fn main() {
             LogTarget::Stdout,
             LogTarget::Webview,
         ]).build())
+        .plugin(tauri_plugin_clipboard::init())
         .setup(|app|{
             let args = Args::parse();
             let image_path = get_image_path_from_cmd_args(args);
