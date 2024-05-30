@@ -30,8 +30,8 @@ const mainWindowLabel = getMainWindowLabel();
 const mainWindow = WebviewWindow.getByLabel(mainWindowLabel);
 
 const buttons = reactive([
-  {toolName: "", checkable: true, checked: false, title: 'draw rectangle', icon: iconDrawRectangle},
-  {toolName: "", checkable: true, checked: false, title: 'draw ellipse', icon: iconDrawEllipse},
+  {toolName: ToolName.RECTANGLE_TOOL, checkable: true, checked: false, title: 'draw rectangle', icon: iconDrawRectangle},
+  {toolName: ToolName.ELLIPSE_TOOL, checkable: true, checked: false, title: 'draw ellipse', icon: iconDrawEllipse},
   {toolName: "", checkable: true, checked: false, title: 'draw line', icon: iconDrawLine},
   {toolName: "", checkable: true, checked: false, title: 'draw arrow', icon: iconDrawArrow},
   {toolName: "", checkable: true, checked: false, title: 'draw freehand', icon: iconDrawFreehand},

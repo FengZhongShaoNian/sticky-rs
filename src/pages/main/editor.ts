@@ -2,6 +2,7 @@ import {Group, Leafer, Rect} from "leafer-ui";
 import {UndoRedoStack} from "./ui-container.ts";
 import {AbstractAnnotationTool} from "./tools/abstract-annotation-tool.ts";
 import {EllipseTool} from "./tools/ellipse-tool.ts";
+import {RectangleTool} from "./tools/rectangle-tool.ts";
 
 function disableDragRegion() {
     const element = document.getElementById('drag-region');
@@ -36,22 +37,34 @@ type ZoomEventListener = (zoomEvent: ZoomEvent) => void;
 
 export class Editor {
     private readonly leafer: Leafer;
-    private undoRedoStack: UndoRedoStack;
+    private readonly background: Group;
+    private readonly undoRedoStack: UndoRedoStack;
     private editing: boolean;
-    private annotationTool: AbstractAnnotationTool;
-    private zoomEventListeners: Set<ZoomEventListener> = new Set<ZoomEventListener>();
+    private readonly annotationTools: Map<string, AbstractAnnotationTool>;
+    private currentActiveAnnotationTool: AbstractAnnotationTool | null;
+    private readonly zoomEventListeners: Set<ZoomEventListener>;
 
     constructor() {
         this.leafer = new Leafer({
             view: window, type: 'draw'
         });
 
-        const group = new Group();
-        this.leafer.add(group);
-        this.undoRedoStack = new UndoRedoStack(group);
+        this.background = new Group();
+        this.leafer.add(this.background);
+
+        const annotations = new Group();
+        this.leafer.add(annotations);
+        this.undoRedoStack = new UndoRedoStack(annotations);
 
         this.editing = false;
-        this.annotationTool = new EllipseTool(this.undoRedoStack, getTouchpad());
+
+        this.annotationTools = new Map<string, AbstractAnnotationTool>();
+        this.currentActiveAnnotationTool = null;
+
+        this.registerAnnotationTool(new RectangleTool(this.undoRedoStack, getTouchpad()));
+        this.registerAnnotationTool(new EllipseTool(this.undoRedoStack, getTouchpad()));
+
+        this.zoomEventListeners = new Set<ZoomEventListener>();
     }
 
     open(image: ImageInfo) {
@@ -60,11 +73,7 @@ export class Editor {
                 type: 'image', url: image.dataURL,
             }
         });
-        this.leafer.add(backgroundRect);
-
-        this.editing = true;
-        disableDragRegion();
-        // this.annotationTool.active();
+        this.background.add(backgroundRect);
 
         getTouchpad().addEventListener('wheel', (event) => {
             if(!this.editing){
@@ -93,6 +102,37 @@ export class Editor {
 
     isEditing(): boolean {
         return this.editing;
+    }
+
+    registerAnnotationTool(tool: AbstractAnnotationTool){
+        const toolName = tool.name();
+        if(this.annotationTools.has(toolName)){
+            throw new Error(`A tool with the same name "${toolName}" already exists`)
+        }
+        this.annotationTools.set(tool.name(), tool);
+    }
+
+    activeTool(toolName: string){
+        let tool = this.annotationTools.get(toolName);
+        if(tool == null){
+            throw new Error(`A tool with name "${toolName}" not found`)
+        }
+        if(this.currentActiveAnnotationTool != null){
+            this.currentActiveAnnotationTool.deactive();
+        }
+        this.currentActiveAnnotationTool = tool;
+        this.currentActiveAnnotationTool.active();
+        this.editing = true;
+        disableDragRegion();
+    }
+
+    exitEditMode(){
+        if(this.currentActiveAnnotationTool != null){
+            this.currentActiveAnnotationTool.deactive();
+            this.currentActiveAnnotationTool = null;
+        }
+        this.editing = false;
+        enableDragRegion();
     }
 
     addZoomEventListener(listener: ZoomEventListener) {

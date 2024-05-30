@@ -1,7 +1,5 @@
 import {UIContainer} from "../ui-container.ts";
-import {Rect, UI} from "leafer-ui";
-import {CrossHair} from "../cursor.ts";
-import {ToolName} from "../../../common/tool-name.ts";
+import {UI} from "leafer-ui";
 
 export interface StyleContext {
     strokeWidth: number,
@@ -74,6 +72,7 @@ export abstract class AbstractAnnotationTool {
             if (!isTheLeftMouseButtonPressed) {
                 return;
             }
+            console.log('mouseDown event', event);
             this.onMouseDown(event);
         }
         this.mouseMoveEventListener = (event) => {
@@ -81,6 +80,7 @@ export abstract class AbstractAnnotationTool {
             if (!isTheLeftMouseButtonPressed) {
                 return;
             }
+            console.log('mouseMove event', event);
             this.onMouseMove(event);
         }
         this.mouseUpEventListener = (event) => {
@@ -88,9 +88,11 @@ export abstract class AbstractAnnotationTool {
             if (!isTheLeftMouseButton) {
                 return;
             }
+            console.log('mouseUp event', event);
             this.onMouseUp(event);
         }
         this.wheelEventListener = (event) => {
+            console.log('wheel event', event);
             this.onWheel(event);
         }
 
@@ -98,6 +100,8 @@ export abstract class AbstractAnnotationTool {
         this.touchpad.addEventListener('mousemove', this.mouseMoveEventListener);
         this.touchpad.addEventListener('mouseup', this.mouseUpEventListener);
         this.touchpad.addEventListener('wheel', this.wheelEventListener);
+
+        console.log(`annotation tool ${this.name()} activated`);
     }
 
     /**
@@ -119,6 +123,7 @@ export abstract class AbstractAnnotationTool {
         if(this.wheelEventListener != null){
             this.touchpad.removeEventListener('wheel', this.wheelEventListener);
         }
+        console.log(`annotation tool ${this.name()} deactivated`);
     }
 
     add(child: UI) {

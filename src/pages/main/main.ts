@@ -174,13 +174,15 @@ async function handleToolbarEvents(){
     await listen(CustomEvent.TOOLBAR_BUTTON_CLICK, async (event) => {
         await logger.trace(`received ${CustomEvent.TOOLBAR_BUTTON_CLICK} from ${event.windowLabel}, payload: ${event.payload}`)
 
-        const toolName = event.payload;
+        const toolName = event.payload as string;
         await logger.trace(`${toolName} clicked`)
 
         if(toolName === ToolName.UNDO_TOOL){
             editor.undo();
         }else if(toolName === ToolName.REDO_TOOL){
             editor.redo();
+        }else {
+            editor.activeTool(toolName);
         }
         // TODO
     });
