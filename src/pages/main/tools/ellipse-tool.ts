@@ -1,8 +1,8 @@
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {ToolName} from "../../../common/tool-name.ts";
 import {CrossHair} from "../cursor.ts";
-import {Ellipse} from "leafer-ui";
-import {UIContainer} from "../ui-container.ts";
+import {Ellipse} from "../graphs/ellipse.ts";
+import {GraphContainer} from "../graphs/graph.ts";
 
 export class EllipseTool extends AbstractAnnotationTool{
 
@@ -12,8 +12,7 @@ export class EllipseTool extends AbstractAnnotationTool{
 
     private customCursor: CrossHair;
 
-
-    constructor(container: UIContainer, touchpad: HTMLElement) {
+    constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
         this.customCursor = new CrossHair(touchpad);
     }
@@ -21,7 +20,6 @@ export class EllipseTool extends AbstractAnnotationTool{
     name(): string {
         return ToolName.ELLIPSE_TOOL;
     }
-
 
     active() {
         super.active();
@@ -40,8 +38,7 @@ export class EllipseTool extends AbstractAnnotationTool{
             y: mouseDownEvent.y,
             width: 0,
             height: 0,
-            fill: "transparent",
-            stroke: this.styleContext.strokeColor,
+            strokeColor: this.styleContext.strokeColor,
             strokeWidth: this.styleContext.strokeWidth
         });
         this.add(this.ellipse);

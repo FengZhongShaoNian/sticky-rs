@@ -1,5 +1,4 @@
-import {UIContainer} from "../ui-container.ts";
-import {UI} from "leafer-ui";
+import {GraphContainer, Graph} from "../graphs/graph.ts";
 
 export interface StyleContext {
     strokeWidth: number,
@@ -9,7 +8,7 @@ export interface StyleContext {
 type MouseEventListener = (event: MouseEvent) => void;
 type WheelEventListener = (event: WheelEvent) => void;
 export abstract class AbstractAnnotationTool {
-    private readonly container: UIContainer;
+    private readonly container: GraphContainer;
     // 触摸板，一个大小与窗口等同的HTML元素，用于感知鼠标事件
     protected readonly touchpad: HTMLElement;
 
@@ -21,7 +20,7 @@ export abstract class AbstractAnnotationTool {
 
     protected styleContext: StyleContext;
 
-    protected constructor(container: UIContainer, touchpad: HTMLElement) {
+    protected constructor(container: GraphContainer, touchpad: HTMLElement) {
         this.container = container;
         this.touchpad = touchpad;
 
@@ -126,7 +125,7 @@ export abstract class AbstractAnnotationTool {
         console.log(`annotation tool ${this.name()} deactivated`);
     }
 
-    add(child: UI) {
-        this.container.add(child);
+    add(graph: Graph) {
+        this.container.add(graph);
     }
 }

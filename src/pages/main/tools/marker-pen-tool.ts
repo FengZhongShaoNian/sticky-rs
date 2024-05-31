@@ -1,8 +1,8 @@
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {Circle, CrossHair} from "../cursor.ts";
-import {UIContainer} from "../ui-container.ts";
 import {ToolName} from "../../../common/tool-name.ts";
-import {Line} from "leafer-ui";
+import {GraphContainer} from "../graphs/graph.ts";
+import {Line} from "../graphs/line.ts";
 
 export class MarkerPenTool extends AbstractAnnotationTool {
     private line: Line | null = null;
@@ -10,7 +10,7 @@ export class MarkerPenTool extends AbstractAnnotationTool {
     private points: Array<number> | null = null;
     private customCursor: Circle;
 
-    constructor(container: UIContainer, touchpad: HTMLElement) {
+    constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
         this.styleContext.strokeWidth = 20;
         this.styleContext.strokeColor = 'rgba(255,0,0,0.3)';
@@ -41,9 +41,8 @@ export class MarkerPenTool extends AbstractAnnotationTool {
         this.points = [mouseDownEvent.x, mouseDownEvent.y]
         this.line = new Line({
             points: this.points,
-            stroke: this.styleContext.strokeColor,
+            strokeColor: this.styleContext.strokeColor,
             strokeWidth: this.styleContext.strokeWidth,
-            curve: true
         });
         this.add(this.line);
     }
@@ -58,7 +57,7 @@ export class MarkerPenTool extends AbstractAnnotationTool {
             this.points[this.points.length] = mouseMoveEvent.y;
             this.line.set({
                 points: this.points,
-                stroke: this.styleContext.strokeColor,
+                strokeColor: this.styleContext.strokeColor,
                 strokeWidth: this.styleContext.strokeWidth
             });
         }

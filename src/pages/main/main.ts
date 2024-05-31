@@ -76,30 +76,16 @@ async function showToolbarWindow(){
     await toolbarWindow.show();
 }
 
-async function getImageSize(base64Image: string): Promise<LogicalSize> {
-    return new Promise((resolve) => {
-        let img = new Image();
-        img.src = base64Image;
-        img.onload = async function () {
-            let physicalSize = new PhysicalSize(img.width, img.height);
-            let scaleFactor = await appWindow.scaleFactor();
-            let logicalSize = physicalSize.toLogical(scaleFactor);
-            resolve(logicalSize);
-        };
-    });
-}
-
 async function openImage(imagePath: string) {
-    let base64Image = await invoke<string>('read_image', {
+    const base64Image = await invoke<string>('read_image', {
         path: imagePath
     });
-    let logicalSize = await getImageSize(base64Image);
 
-    editor.open({
-        dataURL: base64Image,
-        width: logicalSize.width,
-        height: logicalSize.height
-    });
+    const img = new Image();
+    img.src = base64Image;
+    img.onload = () => {
+        editor.open(img);
+    }
 }
 
 function createCustomContextMenu() {
@@ -184,19 +170,20 @@ async function handleToolbarEvents(){
         }else if(toolName === ToolName.REDO_TOOL){
             editor.redo();
         }else if(toolName === ToolName.COPY_TOOL){
-            editor.exportPngImage().then(exportResult => {
-                console.log('exportPngImage result:', exportResult);
-                const dataURL = exportResult.data;
+            const dataURL = editor.exportPngImage();
+            console.log('导出的图片:', dataURL);
+            if(dataURL){
                 const base64 = dataURL.split(',')[1];
                 return clipboard.writeImageBase64(base64);
-            }).catch(console.error);
+            }
+
         } else if(toolName === ToolName.SAVE_TOOL){
-            editor.exportPngImage().then(exportResult => {
-                console.log('exportPngImage result:', exportResult);
-                const dataURL = exportResult.data;
+            const dataURL = editor.exportPngImage();
+            console.log('导出的图片:', dataURL);
+            if(dataURL){
                 const base64 = dataURL.split(',')[1];
                 return saveImageFile(base64);
-            }).catch(console.error);
+            }
         }else if(toolName === ToolName.OK_TOOL){
             exitEditModeAndHideToolbar().catch(console.error);
         }

@@ -1,15 +1,15 @@
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {CrossHair} from "../cursor.ts";
-import {UIContainer} from "../ui-container.ts";
 import {ToolName} from "../../../common/tool-name.ts";
-import {Line} from "leafer-ui";
+import {GraphContainer} from "../graphs/graph.ts";
+import {Line} from "../graphs/line.ts";
 
 export class StraightLineTool extends AbstractAnnotationTool {
     private line: Line | null = null;
     private mouseDownEvent: MouseEvent | null = null;
     private customCursor: CrossHair;
 
-    constructor(container: UIContainer, touchpad: HTMLElement) {
+    constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
         this.customCursor = new CrossHair(touchpad);
     }
@@ -33,7 +33,7 @@ export class StraightLineTool extends AbstractAnnotationTool {
         this.mouseDownEvent = mouseDownEvent;
         this.line = new Line({
             points: [mouseDownEvent.x, mouseDownEvent.y],
-            stroke: this.styleContext.strokeColor,
+            strokeColor: this.styleContext.strokeColor,
             strokeWidth: this.styleContext.strokeWidth
         });
         this.add(this.line);
@@ -46,7 +46,7 @@ export class StraightLineTool extends AbstractAnnotationTool {
         if (this.line) {
             this.line.set({
                 points: [this.mouseDownEvent.x, this.mouseDownEvent.y, mouseMoveEvent.x, mouseMoveEvent.y],
-                stroke: this.styleContext.strokeColor,
+                strokeColor: this.styleContext.strokeColor,
                 strokeWidth: this.styleContext.strokeWidth
             });
         }

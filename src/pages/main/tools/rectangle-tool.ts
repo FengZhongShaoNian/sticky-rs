@@ -1,8 +1,8 @@
-import {Rect} from "leafer-ui";
 import {CrossHair} from "../cursor.ts";
 import {ToolName} from "../../../common/tool-name.ts";
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
-import {UIContainer} from "../ui-container.ts";
+import {GraphContainer} from "../graphs/graph.ts";
+import {Rect} from "../graphs/rect.ts";
 
 export class RectangleTool extends AbstractAnnotationTool {
 
@@ -12,7 +12,7 @@ export class RectangleTool extends AbstractAnnotationTool {
 
     private customCursor: CrossHair;
 
-    constructor(container: UIContainer, touchpad: HTMLElement) {
+    constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
         this.customCursor = new CrossHair(touchpad);
     }
@@ -20,7 +20,6 @@ export class RectangleTool extends AbstractAnnotationTool {
     name(): string {
         return ToolName.RECTANGLE_TOOL;
     }
-
 
     active() {
         super.active();
@@ -40,8 +39,7 @@ export class RectangleTool extends AbstractAnnotationTool {
             y: mouseDownEvent.y,
             width: 0,
             height: 0,
-            fill: "transparent",
-            stroke: this.styleContext.strokeColor,
+            strokeColor: this.styleContext.strokeColor,
             strokeWidth: this.styleContext.strokeWidth
         });
         this.add(this.rect);
@@ -62,6 +60,8 @@ export class RectangleTool extends AbstractAnnotationTool {
                 y,
                 width,
                 height,
+                strokeColor: this.styleContext.strokeColor,
+                strokeWidth: this.styleContext.strokeWidth
             });
         }
 
