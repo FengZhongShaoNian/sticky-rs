@@ -15,7 +15,9 @@ export class NumberTool extends AbstractAnnotationTool {
         this.styleContext.strokeColor = 'rgba(255,0,0,0.3)';
 
         this.num = 1;
-        this.customCursor = new CircleNumber(touchpad);
+        // 1秒中内没有移动则光标自动隐藏
+        const autoHideAfterMsNoMove = 1000;
+        this.customCursor = new CircleNumber(touchpad, undefined, autoHideAfterMsNoMove);
         this.customCursor.style.num = this.num;
     }
 

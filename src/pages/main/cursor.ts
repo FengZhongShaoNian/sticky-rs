@@ -1,4 +1,3 @@
-
 type MouseEventListener = (event: MouseEvent) => void;
 
 type CursorLeftTopPos = { left: number, top: number };
@@ -11,8 +10,12 @@ export abstract class Cursor {
 
     private mouseMoveEventListener: MouseEventListener | null = null;
     private mouseOutEventListener: MouseEventListener | null = null;
+    // 经过autoHideAfterMsNoMove时间（单位：毫秒）光标没有发生移动，自动隐藏鼠标光标
+    // 值大于0才会自动隐藏
+    protected autoHideAfterMsNoMove?: number = 0;
+    private timeout?: NodeJS.Timeout;
 
-    protected constructor(cursorEffectElement: HTMLElement) {
+    protected constructor(cursorEffectElement: HTMLElement, autoHideAfterMsNoMove?: number) {
         // TODO：动态创建mouse元素
         let mouse = document.getElementById('mouse');
         if (mouse == null) {
@@ -20,6 +23,7 @@ export abstract class Cursor {
         }
         this.mouse = mouse;
         this.cursorEffectElement = cursorEffectElement;
+        this.autoHideAfterMsNoMove = autoHideAfterMsNoMove;
     }
 
     active() {
@@ -49,14 +53,28 @@ export abstract class Cursor {
         const {left, top} = this.calculateCursorLeftTopPos(event);
         this.mouse.style.left = left + 'px';
         this.mouse.style.top = top + 'px';
+
+        // 一段时间不移动的话自动隐藏鼠标光标
+        if(this.autoHideAfterMsNoMove && this.autoHideAfterMsNoMove > 0){
+            if(this.timeout){
+                clearTimeout(this.timeout);
+            }
+            this.timeout = setTimeout(()=>{
+                this.hide();
+            }, this.autoHideAfterMsNoMove);
+        }
     }
 
     onMouseOut() {
+        this.hide();
+    }
+
+    hide() {
         this.mouse.style.left = '-50%';
         this.mouse.style.top = '-50%';
     }
 
-    // 更新光标的形状
+// 更新光标的形状
     abstract updateCursorShape(): void;
 
     // 计算光标的位置
@@ -85,8 +103,8 @@ export class CrossHair extends Cursor {
 
     private readonly _style: CrossHairStyle;
 
-    constructor(cursorEffectElement: HTMLElement, style?: CrossHairStyle) {
-        super(cursorEffectElement);
+    constructor(cursorEffectElement: HTMLElement, style?: CrossHairStyle, autoHideAfterMsNoMove?: number) {
+        super(cursorEffectElement, autoHideAfterMsNoMove);
 
         const cursor = this;
         const handler: ProxyHandler<CrossHairStyle> = {
@@ -175,8 +193,8 @@ interface CircleStyle {
 export class Circle extends Cursor{
     private readonly _style: CircleStyle;
 
-    constructor(cursorEffectElement: HTMLElement, style?: CircleStyle) {
-        super(cursorEffectElement);
+    constructor(cursorEffectElement: HTMLElement, style?: CircleStyle, autoHideAfterMsNoMove?: number) {
+        super(cursorEffectElement, autoHideAfterMsNoMove);
 
         const cursor = this;
         const handler: ProxyHandler<CircleStyle> = {
@@ -268,8 +286,8 @@ export class CircleNumber extends Cursor {
     private readonly _style: CircleNumberStyle;
     private _diameter: number;
 
-    constructor(cursorEffectElement: HTMLElement, style?: CircleNumberStyle) {
-        super(cursorEffectElement);
+    constructor(cursorEffectElement: HTMLElement, style?: CircleNumberStyle, autoHideAfterMsNoMove?: number) {
+        super(cursorEffectElement, autoHideAfterMsNoMove);
         const cursor = this;
         const handler: ProxyHandler<CircleNumberStyle> = {
             get(target: CircleNumberStyle, propKey: string) {
