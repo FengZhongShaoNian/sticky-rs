@@ -9,6 +9,7 @@ import {MarkerPenTool} from "./tools/marker-pen-tool.ts";
 import {NumberTool} from "./tools/number-tool.ts";
 import {ArrowTool} from "./tools/arrow-tool.ts";
 import {EraserTool} from "./tools/eraser-tool.ts";
+import {MosaicTool} from "./tools/mosaic-tool.ts";
 
 function getDragRegion(){
     const element = document.getElementById('drag-region');
@@ -164,6 +165,19 @@ class CanvasRenderer implements Renderer {
     renderAnnotations(){
         this.annotationCtx.clearRect(0, 0, this.annotationCanvas.width, this.annotationCanvas.height);
         for (let graph of this.annotationContainer) {
+            if(graph.backgroundImageAware){
+                const getImageData = (x: number, y: number, width: number, height: number) => {
+                    console.log(`试图提取(x: ${x}, y: ${y}, width: ${width}, height: ${height})的背景图像`);
+                    const devicePixelRatio = window.devicePixelRatio || 1;
+                    const scaledX = x * devicePixelRatio;
+                    const scaledY = y * devicePixelRatio;
+                    const scaledWidth = width * devicePixelRatio;
+                    const scaledHeight = height * devicePixelRatio;
+                    console.log(`根据设备像素比进行换算后，提取(x: ${scaledX}, y: ${scaledY}, width: ${scaledWidth}, height: ${scaledHeight})的背景图像`);
+                    return this.backgroundCtx.getImageData(scaledX, scaledY, scaledWidth, scaledHeight);
+                }
+                graph.backgroundImageAware({getImageData: getImageData});
+            }
             graph.render(this.annotationCtx);
         }
     }
@@ -291,6 +305,7 @@ export class Editor {
         this.registerAnnotationTool(new NumberTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new ArrowTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new EraserTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new MosaicTool(this.annotationContainer, this.annotationCanvas));
 
         this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer);
         this.renderer.renderBackground();

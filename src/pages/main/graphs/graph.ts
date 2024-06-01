@@ -42,9 +42,15 @@ abstract class AbstractObservable implements TypedObservable {
     }
 }
 
+export interface BackgroundImageExtractor {
+    getImageData(x: number, y: number, width: number, height: number): ImageData;
+}
+
 export interface Graph extends TypedObservable{
     render(ctx: CanvasRenderingContext2D): void;
     scale(scalingRatio: number): void;
+    // 当该方法存在的时候，每次渲染的时候，渲染器都会先调用该方法传入BackgroundImageExtractor，使得该Graph可以获取背景的指定区域的画面
+    backgroundImageAware?(backgroundImageExtractor: BackgroundImageExtractor): void;
 }
 
 export abstract class AbstractGraph extends AbstractObservable implements Graph {

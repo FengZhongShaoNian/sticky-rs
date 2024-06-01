@@ -1,4 +1,5 @@
 import {EraserTool} from "../pages/main/tools/eraser-tool.ts";
+import {MosaicTool} from "../pages/main/tools/mosaic-tool.ts";
 
 export enum ToolName {
     // 矩形工具
@@ -25,6 +26,8 @@ export enum ToolName {
     // 橡皮擦工具
     ERASER_TOOL = "EraserTool",
 
+    // 马赛克工具
+    MOSAIC_TOOL = "MosaicTool",
 
     UNDO_TOOL = "UndoTool",
     REDO_TOOL = "RedoTool",
