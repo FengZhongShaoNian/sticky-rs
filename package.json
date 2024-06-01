@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1",
+    "stackblur-canvas": "^2.7.0",
     "tauri-plugin-clipboard-api": "^0.6.10",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
     "vue": "^3.3.4"

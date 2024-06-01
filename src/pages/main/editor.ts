@@ -10,6 +10,7 @@ import {NumberTool} from "./tools/number-tool.ts";
 import {ArrowTool} from "./tools/arrow-tool.ts";
 import {EraserTool} from "./tools/eraser-tool.ts";
 import {MosaicTool} from "./tools/mosaic-tool.ts";
+import {GaussianBlurTool} from "./tools/gaussian-blur-tool.ts";
 
 function getDragRegion(){
     const element = document.getElementById('drag-region');
@@ -306,6 +307,7 @@ export class Editor {
         this.registerAnnotationTool(new ArrowTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new EraserTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new MosaicTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new GaussianBlurTool(this.annotationContainer, this.annotationCanvas));
 
         this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer);
         this.renderer.renderBackground();

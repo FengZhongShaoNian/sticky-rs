@@ -11,6 +11,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^1
         version: 1.5.6
+      stackblur-canvas:
+        specifier: ^2.7.0
+        version: 2.7.0
       tauri-plugin-clipboard-api:
         specifier: ^0.6.10
         version: 0.6.10
@@ -555,6 +558,10 @@ packages:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
     engines: {node: '>=0.10.0'}
 
+  stackblur-canvas@2.7.0:
+    resolution: {integrity: sha512-yf7OENo23AGJhBriGx0QivY5JP6Y1HbrrDI6WLt6C5auYZXlQrheoY8hD4ibekFKz1HOfE48Ww8kMWMnJD/zcQ==}
+    engines: {node: '>=0.1.14'}
+
   svgo@3.3.2:
     resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
     engines: {node: '>=14.0.0'}
@@ -1058,6 +1065,8 @@ snapshots:
   semver@7.6.2: {}
 
   source-map-js@1.2.0: {}
+
+  stackblur-canvas@2.7.0: {}
 
   svgo@3.3.2:
     dependencies:

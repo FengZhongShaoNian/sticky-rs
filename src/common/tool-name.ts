@@ -29,6 +29,9 @@ export enum ToolName {
     // 马赛克工具
     MOSAIC_TOOL = "MosaicTool",
 
+    // 高斯模糊工具
+    GAUSSIAN_BLUR_TOOL = "GaussianBlurTool",
+
     UNDO_TOOL = "UndoTool",
     REDO_TOOL = "RedoTool",
     COPY_TOOL = "CopyTool",
