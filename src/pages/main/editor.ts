@@ -30,8 +30,8 @@ function enableDragRegion() {
     element.removeAttribute("style");
 }
 
-function getCanvas() {
-    let element = document.getElementById('canvas');
+function getCanvas(canvasId: string) {
+    let element = document.getElementById(canvasId);
     if (element == null) {
         throw new Error('HTMLElement whose id="canvas" not found');
     }
@@ -70,8 +70,18 @@ enum ZoomType {
 }
 
 class CanvasRenderer implements Renderer {
-    private canvas: HTMLCanvasElement;
-    private readonly ctx: CanvasRenderingContext2D;
+    // 用于绘制背景
+    private backgroundCanvas: HTMLCanvasElement;
+    private readonly backgroundCtx: CanvasRenderingContext2D;
+
+    // 用于绘制标注
+    private annotationCanvas: HTMLCanvasElement;
+    private readonly annotationCtx: CanvasRenderingContext2D;
+
+    // 用于导出渲染结果
+    private mergeCanvas: HTMLCanvasElement;
+    private readonly mergeCtx: CanvasRenderingContext2D;
+
     private readonly backgroundImage: HTMLImageElement;
     private readonly annotationContainer: GraphContainer;
     private readonly backgroundImageWidth: number;
@@ -81,14 +91,27 @@ class CanvasRenderer implements Renderer {
     // 缩放比例
     private scalingRatio: number;
 
-    constructor(canvas: HTMLCanvasElement, background: HTMLImageElement, annotationContainer: GraphContainer) {
-        this.canvas = canvas;
-
-        const ctx = this.canvas.getContext("2d");
+    requireContext(canvas: HTMLCanvasElement){
+        const ctx = canvas.getContext("2d");
         if(ctx == null){
             throw new Error('Failed to get context2d from canvas');
         }
-        this.ctx = ctx;
+        return ctx;
+    }
+
+    constructor(backgroundCanvas: HTMLCanvasElement,
+                annotationCanvas: HTMLCanvasElement,
+                mergeCanvas: HTMLCanvasElement,
+                background: HTMLImageElement,
+                annotationContainer: GraphContainer) {
+        this.backgroundCanvas = backgroundCanvas;
+        this.annotationCanvas = annotationCanvas;
+        this.mergeCanvas = mergeCanvas;
+
+        this.backgroundCtx = this.requireContext(backgroundCanvas);
+        this.annotationCtx = this.requireContext(annotationCanvas);
+        this.mergeCtx = this.requireContext(mergeCanvas);
+
         this.backgroundImage = background;
         this.annotationContainer = annotationContainer;
         this.annotationContainer.addObserver(this);
@@ -105,13 +128,13 @@ class CanvasRenderer implements Renderer {
         this.scalingRatio = 1; // 无缩放
 
         // 调整画布尺寸
-        this.resizeCanvas(this.backgroundImageWidth, this.backgroundImageHeight);
+        this.resizeAllCanvas(this.backgroundImageWidth, this.backgroundImageHeight);
 
         // 按 devicePixelRatio 缩放所有绘图操作
-        this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        this.scaleAllContextsWithDevicePixelRatio(devicePixelRatio);
 
         // 获取画布的大小（以 CSS 像素为单位）。
-        const rect = this.canvas.getBoundingClientRect();
+        const rect = this.backgroundCanvas.getBoundingClientRect();
         this.backgroundImageGraph = new Image({
             x: 0,
             y: 0,
@@ -121,29 +144,47 @@ class CanvasRenderer implements Renderer {
         });
     }
 
+    private scaleAllContextsWithDevicePixelRatio(devicePixelRatio: number) {
+        this.backgroundCtx.scale(devicePixelRatio, devicePixelRatio);
+        this.annotationCtx.scale(devicePixelRatio, devicePixelRatio);
+        this.mergeCtx.scale(devicePixelRatio, devicePixelRatio);
+    }
+
     render(graph: Graph): void {
         this.annotationContainer.add(graph);
-        this.renderAll();
+        this.renderAnnotations();
+    }
+
+    renderBackground(){
+        this.backgroundCtx.clearRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
+        this.backgroundImageGraph.render(this.backgroundCtx);
+    }
+
+    renderAnnotations(){
+        this.annotationCtx.clearRect(0, 0, this.annotationCanvas.width, this.annotationCanvas.height);
+        for (let graph of this.annotationContainer) {
+            graph.render(this.annotationCtx);
+        }
     }
 
     renderAll(){
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        this.backgroundImageGraph.render(this.ctx);
-
-        for (let graph of this.annotationContainer) {
-            graph.render(this.ctx);
-        }
+        this.renderBackground();
+        this.renderAnnotations();
     }
 
     exportImageToDataURL(type?: string | undefined, quality?: any){
         this.renderAll();
-        return this.canvas.toDataURL(type, quality);
+
+        const rect = this.mergeCanvas.getBoundingClientRect();
+        this.mergeCtx.clearRect(0, 0, this.mergeCanvas.width, this.mergeCanvas.height);
+        this.mergeCtx.drawImage(this.backgroundCanvas, 0, 0, rect.width, rect.height);
+        this.mergeCtx.drawImage(this.annotationCanvas, 0, 0, rect.width, rect.height);
+
+        return this.mergeCanvas.toDataURL(type, quality);
     }
 
     update(_observable: TypedObservable): void {
-        // 暂时先每次都全部渲染
-       this.renderAll();
+       this.renderAnnotations();
     }
 
     zoom(type: ZoomType): ZoomResult{
@@ -161,7 +202,7 @@ class CanvasRenderer implements Renderer {
         const newWidth = this.backgroundImageWidth * this.scalingRatio;
         const newHeight = this.backgroundImageHeight * this.scalingRatio;
 
-        this.resizeCanvas(newWidth, newHeight);
+        this.resizeAllCanvas(newWidth, newHeight);
 
         this.backgroundImageGraph.scale(newScalingRationForGraph);
         for (let graph of this.annotationContainer) {
@@ -169,7 +210,7 @@ class CanvasRenderer implements Renderer {
         }
 
         // 按 devicePixelRatio 缩放所有绘图操作
-        this.ctx.scale(devicePixelRatio, devicePixelRatio);
+        this.scaleAllContextsWithDevicePixelRatio(devicePixelRatio);
 
         // 重新渲染
         this.renderAll();
@@ -182,30 +223,44 @@ class CanvasRenderer implements Renderer {
         }
     }
 
-    private resizeCanvas(newWidth: number, newHeight: number){
-        console.log('开始调整画布大小')
+    /**
+     * 调整画布的大小
+     *
+     * @param newWidth 画布的物理尺寸
+     * @param newHeight 画布的物理尺寸
+     */
+    private resizeAllCanvas(newWidth: number, newHeight: number){
+        this.resizeCanvas(this.backgroundCanvas, newWidth, newHeight);
+        this.resizeCanvas(this.annotationCanvas, newWidth, newHeight);
+        this.resizeCanvas(this.mergeCanvas, newWidth, newHeight);
+    }
+
+    private resizeCanvas(canvas: HTMLCanvasElement, newWidth: number, newHeight: number){
+        console.log(`开始调整画布${canvas.id}的大小`)
         // 获取设备像素比
         const devicePixelRatio = window.devicePixelRatio || 1;
 
         console.log('设备的像素比：%d', devicePixelRatio);
 
         // canvas.width和canvas.height设置的是Canvas元素的内部渲染缓冲区的逻辑像素尺寸
-        this.canvas.width = newWidth * devicePixelRatio;
-        this.canvas.height = newHeight * devicePixelRatio;
+        canvas.width = newWidth * devicePixelRatio;
+        canvas.height = newHeight * devicePixelRatio;
 
-        console.log(`调整后画布的逻辑宽度：${this.canvas.width}，逻辑高度：${this.canvas.height}`);
+        console.log(`调整后画布的逻辑宽度：${canvas.width}，逻辑高度：${canvas.height}`);
 
-        this.canvas.style.width = `${newWidth}px`;
-        this.canvas.style.height = `${newHeight}px`;
+        canvas.style.width = `${newWidth}px`;
+        canvas.style.height = `${newHeight}px`;
 
-        console.log(`调整后画布的物理宽度：${this.canvas.style.width}，物理高度：${this.canvas.style.height}`);
-        console.log(`调整后画布的BoundingClientRect`, this.canvas.getBoundingClientRect());
+        console.log(`调整后画布的物理宽度：${canvas.style.width}，物理高度：${canvas.style.height}`);
+        console.log(`调整后画布的BoundingClientRect`, canvas.getBoundingClientRect());
     }
 
 }
 
 export class Editor {
-    private readonly canvas: HTMLCanvasElement;
+    private readonly backgroundCanvas: HTMLCanvasElement;
+    private readonly annotationCanvas: HTMLCanvasElement;
+    private readonly mergeCanvas: HTMLCanvasElement;
     private renderer?: CanvasRenderer;
     private editing: boolean;
     private readonly annotationTools: Map<string, AbstractAnnotationTool>;
@@ -214,7 +269,9 @@ export class Editor {
     private readonly zoomEventListeners: Set<ZoomEventListener>;
 
     constructor() {
-        this.canvas = getCanvas();
+        this.backgroundCanvas = getCanvas("background-canvas")
+        this.annotationCanvas = getCanvas("annotation-canvas");
+        this.mergeCanvas = getCanvas("merge-canvas");
         this.editing = false;
         this.annotationTools = new Map<string, AbstractAnnotationTool>();
         this.zoomEventListeners = new Set<ZoomEventListener>();
@@ -225,16 +282,16 @@ export class Editor {
 
         this.annotationContainer = new GraphContainer();
 
-        this.registerAnnotationTool(new RectangleTool(this.annotationContainer, this.canvas));
-        this.registerAnnotationTool(new EllipseTool(this.annotationContainer, this.canvas));
-        this.registerAnnotationTool(new StraightLineTool(this.annotationContainer, this.canvas));
-        this.registerAnnotationTool(new FreeCurveTool(this.annotationContainer, this.canvas));
-        this.registerAnnotationTool(new MarkerPenTool(this.annotationContainer, this.canvas));
-        this.registerAnnotationTool(new NumberTool(this.annotationContainer, this.canvas));
-        this.registerAnnotationTool(new ArrowTool(this.annotationContainer, this.canvas));
+        this.registerAnnotationTool(new RectangleTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new EllipseTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new StraightLineTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new FreeCurveTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new MarkerPenTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new NumberTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new ArrowTool(this.annotationContainer, this.annotationCanvas));
 
-        this.renderer = new CanvasRenderer(this.canvas, image, this.annotationContainer);
-        this.renderer.renderAll();
+        this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer);
+        this.renderer.renderBackground();
 
         getDragRegion().addEventListener('wheel', (event) => {
             if(!this.editing && this.renderer){

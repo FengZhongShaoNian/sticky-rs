@@ -12,14 +12,22 @@
               padding : 0;
               overflow: hidden;
           }
-          #drag-region{
+          #merge-canvas{
               position : absolute;
-              width : 100%;
-              height : 100%;
+              left: 0;
+              top: 0;
               background: transparent;
-              z-index: 9998;
+              z-index: 9994;
+              visibility: hidden;
           }
-          #canvas {
+          #background-canvas {
+              position : absolute;
+              left: 0;
+              top: 0;
+              background: transparent;
+              z-index: 9995;
+          }
+          #annotation-canvas {
               position : absolute;
               left: 0;
               top: 0;
@@ -33,10 +41,17 @@
               width: 60px;
               height: 24px;
               background-color: rgba(0, 0, 0, 0.5);
-              z-index: 9997;
               color: red;
               text-align: center;
               display: none;
+              z-index: 9997;
+          }
+          #drag-region{
+              position : absolute;
+              width : 100%;
+              height : 100%;
+              background: transparent;
+              z-index: 9998;
           }
           #mouse {
               position : absolute;
@@ -50,9 +65,11 @@
 
   <body>
     <div id="app"></div>
-    <div id="drag-region" data-tauri-drag-region></div>
-    <canvas id="canvas"></canvas>
+    <canvas id="merge-canvas"></canvas>
+    <canvas id="background-canvas"></canvas>
+    <canvas id="annotation-canvas"></canvas>
     <div id="zoom-tip"></div>
+    <div id="drag-region" data-tauri-drag-region></div>
     <div id="mouse"></div>
     <script type="module" src="/src/pages/main/main.ts"></script>
   </body>

@@ -4,7 +4,6 @@ import {
     LogicalPosition,
     LogicalSize,
     PhysicalPosition,
-    PhysicalSize,
     WebviewWindow
 } from "@tauri-apps/api/window";
 import {invoke} from '@tauri-apps/api/tauri';
@@ -21,12 +20,12 @@ const toolbarWindow = createToolbarWindow();
 const customContextMenuWindow = createCustomContextMenu();
 
 editor.addZoomEventListener((zoomEvent)=>{
-    const logicalSize = new LogicalSize(zoomEvent.width, zoomEvent.height)
+    const logicalSize = new LogicalSize(zoomEvent.width, zoomEvent.height);
+    console.log('开始调整主窗口大小');
     invoke('set_fixed_size', {
         logicalSize: logicalSize
     }).then(()=>{
-        console.log('window.innerWidth after zoom:', window.innerWidth)
-        console.log('window.innerHeight after zoom:', window.innerHeight)
+        console.log(`调整后主窗口大小：${logicalSize.width.toFixed(1)} x ${logicalSize.height.toFixed(1)}`);
     });
 });
 
