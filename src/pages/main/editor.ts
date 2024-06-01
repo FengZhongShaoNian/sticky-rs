@@ -8,6 +8,7 @@ import {FreeCurveTool} from "./tools/free-curve-tool.ts";
 import {MarkerPenTool} from "./tools/marker-pen-tool.ts";
 import {NumberTool} from "./tools/number-tool.ts";
 import {ArrowTool} from "./tools/arrow-tool.ts";
+import {EraserTool} from "./tools/eraser-tool.ts";
 
 function getDragRegion(){
     const element = document.getElementById('drag-region');
@@ -289,6 +290,7 @@ export class Editor {
         this.registerAnnotationTool(new MarkerPenTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new NumberTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new ArrowTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new EraserTool(this.annotationContainer, this.annotationCanvas));
 
         this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer);
         this.renderer.renderBackground();

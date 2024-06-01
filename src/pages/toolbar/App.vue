@@ -40,7 +40,7 @@ const buttons = reactive([
   {toolName: "", checkable: true, checked: false, title: 'blur', icon: iconBlurfx},
   {toolName: "", checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
   {toolName: ToolName.NUMBER_TOOL, checkable: true, checked: false, title: 'draw number', icon: iconDrawNumber},
-  {toolName: "", checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
+  {toolName: ToolName.ERASER_TOOL, checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
   {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: 'undo', icon: iconEditUndo},
   {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
   {toolName: ToolName.SAVE_TOOL, checkable: false, checked: false, title: 'save', icon: iconDocumentSave},

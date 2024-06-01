@@ -1,3 +1,5 @@
+import {EraserTool} from "../pages/main/tools/eraser-tool.ts";
+
 export enum ToolName {
     // 矩形工具
     RECTANGLE_TOOL = "RectangleTool",
@@ -19,6 +21,9 @@ export enum ToolName {
 
     // 箭头工具
     ARROW_TOOL = "ArrowTool",
+
+    // 橡皮擦工具
+    ERASER_TOOL = "EraserTool",
 
 
     UNDO_TOOL = "UndoTool",
