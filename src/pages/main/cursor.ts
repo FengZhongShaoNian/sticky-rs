@@ -81,9 +81,80 @@ export abstract class Cursor {
     abstract calculateCursorLeftTopPos(event: MouseEvent): CursorLeftTopPos;
 }
 
-export interface BoundingRect {
-    width: number,
-    height: number
+// `|`字形的光标
+export interface TextCursorStyle {
+    // 线条的宽度
+    strokeWidth: number,
+    // 线条的颜色
+    strokeColor: string,
+    // `|`的高度
+    height: number,
+}
+
+export class TextCursor extends Cursor{
+    private readonly _style: TextCursorStyle;
+
+    constructor(cursorEffectElement: HTMLElement, style?: TextCursorStyle, autoHideAfterMsNoMove?: number) {
+        super(cursorEffectElement, autoHideAfterMsNoMove);
+        const cursor = this;
+        const handler: ProxyHandler<TextCursorStyle> = {
+            get(target: TextCursorStyle, propKey: string) {
+                return Reflect.get(target, propKey);
+            },
+            set(target: TextCursorStyle, propKey: string , newValue: any) {
+                Reflect.set(target, propKey, newValue);
+                cursor.updateCursorShape();
+                return true;
+            }
+        };
+        if(style){
+            this._style = new Proxy(style, handler);
+        }else {
+            this._style = new Proxy({
+                strokeWidth: 2,
+                strokeColor: 'red',
+                height: 20
+            }, handler);
+        }
+    }
+    calculateCursorLeftTopPos(event: MouseEvent): CursorLeftTopPos {
+        return {
+            left: event.x,
+            top: event.y
+        };
+    }
+
+    getShape() {
+        return `
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <line
+              x1="0"    
+              y1="0"     
+              x2="0"     
+              y2="${this._style.height}"    
+              stroke="${this._style.strokeColor}"        
+              stroke-width="${this._style.strokeWidth}"
+            />
+          </svg>
+    `;
+    }
+
+    updateCursorShape(): void {
+        const shape = this.getShape();
+        console.log('TextCursor shape:', shape);
+
+        const encoded = btoa(shape);
+        const dataURL = `data:image/svg+xml;base64,${encoded}`
+
+        this.mouse.style.background = `url(${dataURL}) no-repeat center center`;
+        this.mouse.style.width = this._style.strokeWidth + 'px';
+        this.mouse.style.height = this._style.height + 'px';
+    }
+
+    get style(){
+        return this._style;
+    }
+
 }
 
 // 十字形光标的样式

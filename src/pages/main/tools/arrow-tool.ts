@@ -1,7 +1,6 @@
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {CrossHair} from "../cursor.ts";
 import {ToolName} from "../../../common/tool-name.ts";
-import {Path} from "../graphs/path.ts";
 import {GraphContainer} from "../graphs/graph.ts";
 import {Arrow} from "../graphs/arrow.ts";
 

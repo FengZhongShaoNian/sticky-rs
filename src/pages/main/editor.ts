@@ -11,6 +11,7 @@ import {ArrowTool} from "./tools/arrow-tool.ts";
 import {EraserTool} from "./tools/eraser-tool.ts";
 import {MosaicTool} from "./tools/mosaic-tool.ts";
 import {GaussianBlurTool} from "./tools/gaussian-blur-tool.ts";
+import {TextTool} from "./tools/text-tool.ts";
 
 function getDragRegion(){
     const element = document.getElementById('drag-region');
@@ -242,8 +243,8 @@ class CanvasRenderer implements Renderer {
     /**
      * 调整画布的大小
      *
-     * @param newWidth 画布的物理尺寸
-     * @param newHeight 画布的物理尺寸
+     * @param newWidth 画布的物理尺寸（画布的CSS尺寸）
+     * @param newHeight 画布的物理尺寸（画布的CSS尺寸）
      */
     private resizeAllCanvas(newWidth: number, newHeight: number){
         this.resizeCanvas(this.backgroundCanvas, newWidth, newHeight);
@@ -308,6 +309,7 @@ export class Editor {
         this.registerAnnotationTool(new EraserTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new MosaicTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new GaussianBlurTool(this.annotationContainer, this.annotationCanvas));
+        this.registerAnnotationTool(new TextTool(this.annotationContainer, this.annotationCanvas));
 
         this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer);
         this.renderer.renderBackground();

@@ -38,7 +38,7 @@ const buttons = reactive([
   {toolName: ToolName.MARKER_PEN_TOOL, checkable: true, checked: false, title: 'draw highlight', icon: iconDrawHighlight},
   {toolName: ToolName.MOSAIC_TOOL, checkable: true, checked: false, title: 'mosaic', icon: iconPixelartTrace},
   {toolName: ToolName.GAUSSIAN_BLUR_TOOL, checkable: true, checked: false, title: 'blur', icon: iconBlurfx},
-  {toolName: "", checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
+  {toolName: ToolName.TEXT_TOOL, checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
   {toolName: ToolName.NUMBER_TOOL, checkable: true, checked: false, title: 'draw number', icon: iconDrawNumber},
   {toolName: ToolName.ERASER_TOOL, checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
   {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: 'undo', icon: iconEditUndo},

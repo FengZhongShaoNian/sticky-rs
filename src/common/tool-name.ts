@@ -32,6 +32,9 @@ export enum ToolName {
     // 高斯模糊工具
     GAUSSIAN_BLUR_TOOL = "GaussianBlurTool",
 
+    // 文本工具
+    TEXT_TOOL = "TextTool",
+
     UNDO_TOOL = "UndoTool",
     REDO_TOOL = "RedoTool",
     COPY_TOOL = "CopyTool",

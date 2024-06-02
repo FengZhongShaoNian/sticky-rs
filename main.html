@@ -17,7 +17,7 @@
               left: 0;
               top: 0;
               background: transparent;
-              z-index: 9994;
+              z-index: 9993;
               visibility: hidden;
           }
           #background-canvas {
@@ -25,14 +25,14 @@
               left: 0;
               top: 0;
               background: transparent;
-              z-index: 9995;
+              z-index: 9994;
           }
           #annotation-canvas {
               position : absolute;
               left: 0;
               top: 0;
               background: transparent;
-              z-index: 9996;
+              z-index: 9995;
           }
           #zoom-tip {
               position : absolute;
@@ -44,14 +44,14 @@
               color: red;
               text-align: center;
               display: none;
-              z-index: 9997;
+              z-index: 9996;
           }
           #drag-region{
               position : absolute;
               width : 100%;
               height : 100%;
               background: transparent;
-              z-index: 9998;
+              z-index: 9997;
           }
           #mouse {
               position : absolute;
@@ -59,6 +59,21 @@
               top: -50%;
               pointer-events: none;
               z-index: 9999;
+          }
+          .text-editor {
+              position : fixed;
+              border: none;
+              outline: none;
+              background: transparent;
+              z-index: 9998;
+              font-family: sans-serif;
+              min-width: 10px;
+              caret-color: red;
+              overflow: hidden;
+              overflow-wrap: anywhere;
+          }
+          .hidden-text-editor {
+              visibility: hidden;
           }
       </style>
   </head>
