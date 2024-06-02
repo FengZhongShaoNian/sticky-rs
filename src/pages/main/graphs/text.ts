@@ -59,10 +59,11 @@ export class Text extends AbstractGraph {
 
         const maxWidth = this._data.maxWidth;
 
-        const chars = this._data.content.split('');
+        const content = this._data.content;
         const rows = new Array<string>();
         let rowBuilder = '';
-        for (let ch of chars){
+        for (let i = 0; i < content.length; i++){
+            const ch = content.charAt(i);
             if(ch === '\n'){
                 rows.push(rowBuilder);
                 rowBuilder = '';
@@ -72,12 +73,15 @@ export class Text extends AbstractGraph {
                 const textWidth = textMetrics.actualBoundingBoxRight + textMetrics.actualBoundingBoxLeft;
                 if(textWidth > maxWidth){
                     rows.push(rowBuilder);
-                    rowBuilder = '';
+                    rowBuilder = ch;
                 }else {
                     rowBuilder += ch;
                 }
             }
         }
+        rows.push(rowBuilder);
+
+        console.log(`content:[${content}] 对应的rows:`, rows);
 
         let x = this._data.x;
         let y = this._data.y;
