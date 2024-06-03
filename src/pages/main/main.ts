@@ -142,12 +142,12 @@ async function handleCustomContextMenuEvents(){
 
     await listen(CustomEvent.MENU_COPY_TO_CLIPBOARD, async (event) => {
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
-        // TODO
+        return await exportImageToClipboard();
     });
 
     await listen(CustomEvent.MENU_SAVE_TO_FILE, async (event) => {
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
-        // TODO
+        return await exportImageToFile();
     });
 
     await listen(CustomEvent.MENU_CLOSE_WINDOW, async (event) => {
@@ -179,6 +179,30 @@ async function tryToSendNotification(title: string, body: string){
     }
 }
 
+async function exportImageToClipboard() {
+    const dataURL = editor.exportPngImage();
+    console.log('导出的图片:', dataURL);
+    if (dataURL) {
+        const base64 = dataURL.split(',')[1];
+        return clipboard.writeImageBase64(base64)
+            .then(() => tryToSendNotification('提示', '图片已经成功复制到剪切板'));
+    } else {
+        return tryToSendNotification('错误', '复制图片失败');
+    }
+}
+
+async function exportImageToFile() {
+    const dataURL = editor.exportPngImage();
+    console.log('导出的图片:', dataURL);
+    if (dataURL) {
+        const base64 = dataURL.split(',')[1];
+        return saveImageFile(base64)
+            .then(() => tryToSendNotification('提示', '图片已经成功导出'));
+    } else {
+        return tryToSendNotification('错误', '图片导出失败');
+    }
+}
+
 async function handleToolbarEvents(){
     await listen(CustomEvent.TOOLBAR_BUTTON_CLICK, async (event) => {
         await logger.trace(`received ${CustomEvent.TOOLBAR_BUTTON_CLICK} from ${event.windowLabel}, payload: ${event.payload}`)
@@ -191,33 +215,15 @@ async function handleToolbarEvents(){
         }else if(toolName === ToolName.REDO_TOOL){
             editor.redo();
         }else if(toolName === ToolName.COPY_TOOL){
-            const dataURL = editor.exportPngImage();
-            console.log('导出的图片:', dataURL);
-            if(dataURL){
-                const base64 = dataURL.split(',')[1];
-                return clipboard.writeImageBase64(base64)
-                    .then(()=>tryToSendNotification('提示', '图片已经成功复制到剪切板'));
-            }else {
-                return tryToSendNotification('错误', '复制图片失败');
-            }
-
+            return await exportImageToClipboard();
         } else if(toolName === ToolName.SAVE_TOOL){
-            const dataURL = editor.exportPngImage();
-            console.log('导出的图片:', dataURL);
-            if(dataURL){
-                const base64 = dataURL.split(',')[1];
-                return saveImageFile(base64)
-                    .then(()=>tryToSendNotification('提示', '图片已经成功导出'));
-            }else {
-                return tryToSendNotification('错误', '图片导出失败');
-            }
+            return await exportImageToFile();
         }else if(toolName === ToolName.OK_TOOL){
             exitEditModeAndHideToolbar().catch(console.error);
         }
         else {
             editor.activeTool(toolName);
         }
-        // TODO
     });
 }
 
