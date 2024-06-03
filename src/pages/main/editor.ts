@@ -164,7 +164,7 @@ class CanvasRenderer implements Renderer {
         this.backgroundImageGraph.render(this.backgroundCtx);
     }
 
-    renderAnnotations(){
+    renderAnnotations(force?: boolean){
         this.annotationCtx.clearRect(0, 0, this.annotationCanvas.width, this.annotationCanvas.height);
         for (let graph of this.annotationContainer) {
             if(graph.backgroundImageAware){
@@ -180,17 +180,17 @@ class CanvasRenderer implements Renderer {
                 }
                 graph.backgroundImageAware({getImageData: getImageData});
             }
-            graph.render(this.annotationCtx);
+            graph.render(this.annotationCtx, force);
         }
     }
 
-    renderAll(){
+    renderAll(force?: boolean){
         this.renderBackground();
-        this.renderAnnotations();
+        this.renderAnnotations(force);
     }
 
     exportImageToDataURL(type?: string | undefined, quality?: any){
-        this.renderAll();
+        this.renderAll(true);
 
         const rect = this.mergeCanvas.getBoundingClientRect();
         this.mergeCtx.clearRect(0, 0, this.mergeCanvas.width, this.mergeCanvas.height);

@@ -47,7 +47,9 @@ export interface BackgroundImageExtractor {
 }
 
 export interface Graph extends TypedObservable{
-    render(ctx: CanvasRenderingContext2D): void;
+    // 使用指定的ctx渲染图形。force是一个声明，一些图形的实现类（例如Text）可能会在编辑模式下不进行渲染（例如当Text的visible设置为false时），
+    // 而force可以通知这些图形强行进行渲染
+    render(ctx: CanvasRenderingContext2D, force?: boolean): void;
     scale(scalingRatio: number): void;
     // 当该方法存在的时候，每次渲染的时候，渲染器都会先调用该方法传入BackgroundImageExtractor，使得该Graph可以获取背景的指定区域的画面
     backgroundImageAware?(backgroundImageExtractor: BackgroundImageExtractor): void;
@@ -67,7 +69,7 @@ export abstract class AbstractGraph extends AbstractObservable implements Graph 
         this.notifyObservers();
     }
 
-    abstract render(ctx: CanvasRenderingContext2D): void;
+    abstract render(ctx: CanvasRenderingContext2D, force?: boolean): void;
     abstract scale(scalingRatio: number): void;
 }
 

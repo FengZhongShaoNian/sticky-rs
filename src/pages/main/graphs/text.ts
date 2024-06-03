@@ -29,7 +29,7 @@ export class Text extends AbstractGraph {
         this._data = data;
     }
 
-    render(ctx: CanvasRenderingContext2D): void {
+    render(ctx: CanvasRenderingContext2D, force?: boolean): void {
         console.log('TextData:', this._data);
 
         if(this._data.x === undefined
@@ -41,8 +41,8 @@ export class Text extends AbstractGraph {
             console.log('Text data is incomplete, giving up rendering.');
             return;
         }
-        if(this._data.visible === false){
-            console.log('_data.visible is false, giving up rendering. ');
+        if(!force && this._data.visible === false){
+            console.log('force is false and _data.visible is false, giving up rendering. ');
             return;
         }
 
