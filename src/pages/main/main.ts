@@ -14,6 +14,12 @@ import {CustomEvent} from "../../common/custom-event.ts";
 import {generateContextMenuWindowLabel, generateToolbarWindowLabel} from "../../common/window-label.ts";
 import {ToolName} from "../../common/tool-name.ts";
 import {save} from "@tauri-apps/api/dialog";
+import {
+    isPermissionGranted,
+    requestPermission,
+    sendNotification,
+} from '@tauri-apps/api/notification';
+
 
 const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
@@ -157,6 +163,22 @@ async function handleCustomContextMenuEvents(){
     });
 }
 
+async function tryToSendNotification(title: string, body: string){
+    // 你有发送通知的权限吗？
+    let permissionGranted = await isPermissionGranted();
+
+    // 如果没有，我们需要请求它
+    if (!permissionGranted) {
+        const permission = await requestPermission();
+        permissionGranted = permission === 'granted';
+    }
+
+    // 一旦获得许可，我们就可以发送通知
+    if (permissionGranted) {
+        sendNotification({ title, body});
+    }
+}
+
 async function handleToolbarEvents(){
     await listen(CustomEvent.TOOLBAR_BUTTON_CLICK, async (event) => {
         await logger.trace(`received ${CustomEvent.TOOLBAR_BUTTON_CLICK} from ${event.windowLabel}, payload: ${event.payload}`)
@@ -173,7 +195,10 @@ async function handleToolbarEvents(){
             console.log('导出的图片:', dataURL);
             if(dataURL){
                 const base64 = dataURL.split(',')[1];
-                return clipboard.writeImageBase64(base64);
+                return clipboard.writeImageBase64(base64)
+                    .then(()=>tryToSendNotification('提示', '图片已经成功复制到剪切板'));
+            }else {
+                return tryToSendNotification('错误', '复制图片失败');
             }
 
         } else if(toolName === ToolName.SAVE_TOOL){
@@ -181,7 +206,10 @@ async function handleToolbarEvents(){
             console.log('导出的图片:', dataURL);
             if(dataURL){
                 const base64 = dataURL.split(',')[1];
-                return saveImageFile(base64);
+                return saveImageFile(base64)
+                    .then(()=>tryToSendNotification('提示', '图片已经成功导出'));
+            }else {
+                return tryToSendNotification('错误', '图片导出失败');
             }
         }else if(toolName === ToolName.OK_TOOL){
             exitEditModeAndHideToolbar().catch(console.error);
