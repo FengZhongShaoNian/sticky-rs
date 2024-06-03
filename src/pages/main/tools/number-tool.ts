@@ -70,4 +70,16 @@ export class NumberTool extends AbstractAnnotationTool {
     onMouseMove(_mouseMoveEvent: MouseEvent): void {
     }
 
+
+    onWheel(wheelEvent: WheelEvent) {
+        super.onWheel(wheelEvent);
+        const MIN_NUMBER = 1;
+        const MAX_NUMBER = 100;
+        if (NumberTool.isScrollUp(wheelEvent)) {
+            this.num = Math.min(this.num + 1, MAX_NUMBER);
+        }else {
+            this.num = Math.max(this.num - 1, MIN_NUMBER);
+        }
+        this.customCursor.style.num = this.num;
+    }
 }
