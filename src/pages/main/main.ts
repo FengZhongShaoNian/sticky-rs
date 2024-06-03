@@ -20,6 +20,7 @@ import {
     sendNotification,
 } from '@tauri-apps/api/notification';
 
+import {i18n} from "../../common/translation.ts"
 
 const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
@@ -95,7 +96,7 @@ async function openImage(imagePath: string) {
 
 function createCustomContextMenu() {
     const popupMenuWindowLabel = generateContextMenuWindowLabel(appWindow.label);
-    const size = new LogicalSize(128, 170);
+    const size = new LogicalSize(200, 170);
     return  new WebviewWindow(popupMenuWindowLabel, {
         url: 'context-menu.html',
         width: size.width,
@@ -145,7 +146,7 @@ async function handleCustomContextMenuEvents(){
         return await exportImageToClipboard();
     });
 
-    await listen(CustomEvent.MENU_SAVE_TO_FILE, async (event) => {
+    await listen(CustomEvent.MENU_EXPORT_TO_FILE, async (event) => {
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
         return await exportImageToFile();
     });
@@ -185,9 +186,9 @@ async function exportImageToClipboard() {
     if (dataURL) {
         const base64 = dataURL.split(',')[1];
         return clipboard.writeImageBase64(base64)
-            .then(() => tryToSendNotification('提示', '图片已经成功复制到剪切板'));
+            .then(() => tryToSendNotification(i18n.t('notifications.titleOK'), i18n.t('notifications.exportImageToClipboardOK')));
     } else {
-        return tryToSendNotification('错误', '复制图片失败');
+        return tryToSendNotification(i18n.t('notifications.titleErr'), i18n.t('notifications.exportImageToClipboardErr'));
     }
 }
 
@@ -197,9 +198,9 @@ async function exportImageToFile() {
     if (dataURL) {
         const base64 = dataURL.split(',')[1];
         return saveImageFile(base64)
-            .then(() => tryToSendNotification('提示', '图片已经成功导出'));
+            .then(() => tryToSendNotification(i18n.t('notifications.titleOK'), i18n.t('notifications.exportImageToFileOK')));
     } else {
-        return tryToSendNotification('错误', '图片导出失败');
+        return tryToSendNotification(i18n.t('notifications.titleErr'), i18n.t('notifications.exportImageToFileErr'));
     }
 }
 

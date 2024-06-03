@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1",
+    "i18next": "^23.11.5",
+    "i18next-browser-languagedetector": "^8.0.0",
     "stackblur-canvas": "^2.7.0",
     "tauri-plugin-clipboard-api": "^0.6.10",
     "tauri-plugin-log-api": "github:tauri-apps/tauri-plugin-log#v1",
@@ -22,6 +24,7 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.0.2",
     "vite": "^5.0.0",
+    "vite-plugin-i18next-loader": "^2.0.12",
     "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^1.8.5"
   }

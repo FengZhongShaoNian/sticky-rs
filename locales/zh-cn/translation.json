@@ -1,0 +1,35 @@
+{
+  "contextMenu": {
+    "showOrHideToolbar": "显示/隐藏工具条",
+    "copyToClipboard": "复制到剪切板",
+    "exportToFile": "导出到文件",
+    "closeWindow": "关闭窗口",
+    "openDevTools": "打开开发者工具"
+  },
+  "toolbar": {
+    "rectangleTool" : "矩形",
+    "ellipseTool" : "椭圆",
+    "straightLineTool" : "直线",
+    "arrowTool" : "箭头",
+    "freeCurveTool" : "铅笔",
+    "markerPenTool" : "马克笔",
+    "mosaicTool" : "马赛克",
+    "gaussianBlurTool" : "高斯模糊",
+    "textTool" : "文本",
+    "numberTool" : "序号",
+    "eraserTool" : "橡皮擦",
+    "undoTool" : "撤销",
+    "redoTool" : "重做",
+    "copyTool" : "复制到剪切板",
+    "saveTool" : "导出到文件",
+    "okTool" : "隐藏工具条"
+  },
+  "notifications": {
+    "titleOK": "提示",
+    "titleErr": "错误",
+    "exportImageToClipboardOK": "图片已经成功复制到剪切板",
+    "exportImageToClipboardErr": "复制图片失败",
+    "exportImageToFileOK": "图片已经成功导出",
+    "exportImageToFileErr": "图片导出失败"
+  }
+}

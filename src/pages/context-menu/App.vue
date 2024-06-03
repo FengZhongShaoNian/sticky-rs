@@ -3,7 +3,8 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
-import {appWindow, WebviewWindow} from "@tauri-apps/api/window";
+import {appWindow} from "@tauri-apps/api/window";
+import {i18n} from '../../common/translation.ts'
 
 async function toggleToolbar(){
   await sendEventToMainWindow(CustomEvent.MENU_TOGGLE_TOOLBAR, {});
@@ -14,8 +15,8 @@ async function copyToClipboard(){
   await appWindow.hide();
 }
 
-async function saveToFile(){
-  await sendEventToMainWindow(CustomEvent.MENU_SAVE_TO_FILE, {});
+async function exportToFile(){
+  await sendEventToMainWindow(CustomEvent.MENU_EXPORT_TO_FILE, {});
   await appWindow.hide();
 }
 
@@ -33,11 +34,11 @@ async function openDevTools(){
 
 <template>
   <div class="container">
-    <div class="menu-item" @click="toggleToolbar">显示/隐藏工具条</div>
-    <div class="menu-item" @click="copyToClipboard">复制到剪切板</div>
-    <div class="menu-item" @click="saveToFile">保存到文件</div>
-    <div class="menu-item" @click="closeWindow">关闭窗口</div>
-    <div class="menu-item" @click="openDevTools">打开开发者工具</div>
+    <div class="menu-item" @click="toggleToolbar">{{i18n.t('contextMenu.showOrHideToolbar')}}</div>
+    <div class="menu-item" @click="copyToClipboard">{{i18n.t('contextMenu.copyToClipboard')}}</div>
+    <div class="menu-item" @click="exportToFile">{{i18n.t('contextMenu.exportToFile')}}</div>
+    <div class="menu-item" @click="closeWindow">{{i18n.t('contextMenu.closeWindow')}}</div>
+    <div class="menu-item" @click="openDevTools">{{i18n.t('contextMenu.openDevTools')}}</div>
   </div>
 </template>
 
@@ -50,7 +51,7 @@ async function openDevTools(){
 }
 
 .container .menu-item {
-  padding: 5px 5px;
+  padding: 5px 25px;
   color: #eff0f1;
   cursor: pointer;
 }

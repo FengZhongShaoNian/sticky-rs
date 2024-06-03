@@ -26,26 +26,28 @@ import {WebviewWindow} from "@tauri-apps/api/window";
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
 import {ToolName} from "../../common/tool-name.ts";
 
+import {i18n} from "../../common/translation.ts"
+
 const mainWindowLabel = getMainWindowLabel();
 const mainWindow = WebviewWindow.getByLabel(mainWindowLabel);
 
 const buttons = reactive([
-  {toolName: ToolName.RECTANGLE_TOOL, checkable: true, checked: false, title: 'draw rectangle', icon: iconDrawRectangle},
-  {toolName: ToolName.ELLIPSE_TOOL, checkable: true, checked: false, title: 'draw ellipse', icon: iconDrawEllipse},
-  {toolName: ToolName.STRAIGHT_LINE_TOOL, checkable: true, checked: false, title: 'draw line', icon: iconDrawLine},
-  {toolName: ToolName.ARROW_TOOL, checkable: true, checked: false, title: 'draw arrow', icon: iconDrawArrow},
-  {toolName: ToolName.FREE_CURVE_TOOL, checkable: true, checked: false, title: 'draw freehand', icon: iconDrawFreehand},
-  {toolName: ToolName.MARKER_PEN_TOOL, checkable: true, checked: false, title: 'draw highlight', icon: iconDrawHighlight},
-  {toolName: ToolName.MOSAIC_TOOL, checkable: true, checked: false, title: 'mosaic', icon: iconPixelartTrace},
-  {toolName: ToolName.GAUSSIAN_BLUR_TOOL, checkable: true, checked: false, title: 'blur', icon: iconBlurfx},
-  {toolName: ToolName.TEXT_TOOL, checkable: true, checked: false, title: 'draw text', icon: iconDrawText},
-  {toolName: ToolName.NUMBER_TOOL, checkable: true, checked: false, title: 'draw number', icon: iconDrawNumber},
-  {toolName: ToolName.ERASER_TOOL, checkable: true, checked: false, title: 'eraser', icon: iconDrawEraser},
-  {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: 'undo', icon: iconEditUndo},
-  {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: 'redo', icon: iconEditRedo},
-  {toolName: ToolName.SAVE_TOOL, checkable: false, checked: false, title: 'save', icon: iconDocumentSave},
-  {toolName: ToolName.COPY_TOOL, checkable: false, checked: false, title: 'copy', icon: iconEditCopy},
-  {toolName: ToolName.OK_TOOL, checkable: false, checked: false, title: 'ok', icon: iconDialogOK},
+  {toolName: ToolName.RECTANGLE_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.rectangleTool'), icon: iconDrawRectangle},
+  {toolName: ToolName.ELLIPSE_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.ellipseTool'), icon: iconDrawEllipse},
+  {toolName: ToolName.STRAIGHT_LINE_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.straightLineTool'), icon: iconDrawLine},
+  {toolName: ToolName.ARROW_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.arrowTool'), icon: iconDrawArrow},
+  {toolName: ToolName.FREE_CURVE_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.freeCurveTool'), icon: iconDrawFreehand},
+  {toolName: ToolName.MARKER_PEN_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.markerPenTool'), icon: iconDrawHighlight},
+  {toolName: ToolName.MOSAIC_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.mosaicTool'), icon: iconPixelartTrace},
+  {toolName: ToolName.GAUSSIAN_BLUR_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.gaussianBlurTool'), icon: iconBlurfx},
+  {toolName: ToolName.TEXT_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.textTool'), icon: iconDrawText},
+  {toolName: ToolName.NUMBER_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.numberTool'), icon: iconDrawNumber},
+  {toolName: ToolName.ERASER_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.eraserTool'), icon: iconDrawEraser},
+  {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.undoTool'), icon: iconEditUndo},
+  {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.redoTool'), icon: iconEditRedo},
+  {toolName: ToolName.SAVE_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.copyTool'), icon: iconDocumentSave},
+  {toolName: ToolName.COPY_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.saveTool'), icon: iconEditCopy},
+  {toolName: ToolName.OK_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.okTool'), icon: iconDialogOK},
 ]);
 
 async function onButtonClicked(buttonIndex: number){

@@ -1,0 +1,35 @@
+{
+  "contextMenu": {
+    "showOrHideToolbar": "Show/Hide Toolbar",
+    "copyToClipboard": "Copy To Clipboard",
+    "exportToFile": "Export To File",
+    "closeWindow": "Close Window",
+    "openDevTools": "Open Dev Tool"
+  },
+  "toolbar": {
+    "rectangleTool" : "Rectangle",
+    "ellipseTool" : "Ellipse",
+    "straightLineTool" : "Straight Line",
+    "arrowTool" : "Arrow",
+    "freeCurveTool" : "Pencil",
+    "markerPenTool" : "Marker Pen",
+    "mosaicTool" : "Mosaic",
+    "gaussianBlurTool" : "Gaussian Blur",
+    "textTool" : "Text",
+    "numberTool" : "Number",
+    "eraserTool" : "Eraser",
+    "undoTool" : "Undo",
+    "redoTool" : "Redo",
+    "copyTool" : "Copy To Clipboard",
+    "saveTool" : "Export To File",
+    "okTool" : "Hide Toolbar"
+  },
+  "notifications": {
+    "titleOK": "Info",
+    "titleErr": "Error",
+    "exportImageToClipboardOK": "The picture has been successfully copied to the clipboard",
+    "exportImageToClipboardErr": "Failed to copy the image to the clipboard",
+    "exportImageToFileOK": "The image has been successfully exported to file",
+    "exportImageToFileErr": "Failed to export the image"
+  }
+}
