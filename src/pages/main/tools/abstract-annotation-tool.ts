@@ -8,7 +8,7 @@ export interface StyleContext {
 type MouseEventListener = (event: MouseEvent) => void;
 type WheelEventListener = (event: WheelEvent) => void;
 export abstract class AbstractAnnotationTool {
-    private readonly container: GraphContainer;
+    protected readonly container: GraphContainer;
     // 触摸板，一个大小与窗口等同的HTML元素，用于感知鼠标事件
     protected readonly touchpad: HTMLElement;
 

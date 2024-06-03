@@ -1,6 +1,6 @@
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {ToolName} from "../../../common/tool-name.ts";
-import {GraphContainer} from "../graphs/graph.ts";
+import {GraphContainer, Observer, TypedObservable} from "../graphs/graph.ts";
 import {Text} from "../graphs/text.ts";
 import {TextCursor} from "../cursor.ts";
 
@@ -159,17 +159,21 @@ class TextEditor {
     }
 }
 
-export class TextTool extends AbstractAnnotationTool {
+export class TextTool extends AbstractAnnotationTool implements Observer {
 
-    private editors: Array<TextEditor>;
+    private readonly editors: Map<TextEditor, Text>;
     private customCursor: TextCursor;
+
+    // 记录由于对应的Text被UndoAdd而导致被隐藏的TextEditor
+    private readonly editorsHiddenByUndoAdd: Set<TextEditor>;
 
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
-        this.editors = new Array<TextEditor>();
+        this.editors = new Map<TextEditor, Text>;
         this.styleContext.strokeWidth = 14;
         this.styleContext.strokeColor = 'red';
         this.customCursor = new TextCursor(touchpad);
+        this.editorsHiddenByUndoAdd = new Set<TextEditor>();
     }
 
     name(): string {
@@ -179,28 +183,39 @@ export class TextTool extends AbstractAnnotationTool {
     active() {
         super.active();
         this.customCursor.active();
+        this.container.addObserver(this);
     }
 
     deactive() {
         super.deactive();
         this.customCursor.deactive();
         this.removeAllEditors();
+        this.container.removeObserver(this);
     }
 
 
     removeAllEditors() {
-        for (let editor of this.editors) {
+        for (let [editor, text] of this.editors) {
             editor.remove();
         }
-        this.editors = [];
+        this.editors.clear();
+        this.editorsHiddenByUndoAdd.clear();
+    }
+
+    // 移除所有由于UndoAdd而被隐藏的编辑器
+    removeHiddenEditors(){
+        for (let hiddenEditor of this.editorsHiddenByUndoAdd) {
+            hiddenEditor.remove();
+            this.editors.delete(hiddenEditor);
+        }
+        this.editorsHiddenByUndoAdd.clear();
     }
 
     findTextEditorByCursor(x: number, y: number){
-        for (let i = this.editors.length - 1; i >= 0; i--) {
-            const editor = this.editors[i];
+        for (let editor of this.editors.keys()) {
             let boundingClientRect = editor.getBoundingClientRect();
             if(x >= boundingClientRect.x && x <= boundingClientRect.x + boundingClientRect.width
-            && y >= boundingClientRect.y && y <= boundingClientRect.y + boundingClientRect.height){
+                && y >= boundingClientRect.y && y <= boundingClientRect.y + boundingClientRect.height){
                 return editor;
             }
         }
@@ -210,7 +225,7 @@ export class TextTool extends AbstractAnnotationTool {
         // 避免编辑器失去焦点
         mouseDownEvent.preventDefault();
 
-        if(this.editors.length > 0){
+        if(this.editors.size > 0){
             // 检查鼠标下面是否存在编辑器
             const cursorHeight = this.customCursor.style.height;
             let x = mouseDownEvent.x;
@@ -218,7 +233,9 @@ export class TextTool extends AbstractAnnotationTool {
             let editor = this.findTextEditorByCursor(x, y) ||
                 this.findTextEditorByCursor(x, y + cursorHeight/2) ||
                 this.findTextEditorByCursor(x, y + cursorHeight);
-            if(editor){
+
+            // 之所以要判断editor是否是由于UndoAdd而被隐藏起来的编辑器，是因为由于UndoAdd而被隐藏的编辑器只应由RedoAdd操作而重新展示
+            if(editor && !this.editorsHiddenByUndoAdd.has(editor)){
                 console.log('鼠标点击的位置存在编辑器', editor);
                 editor.show();
                 return;
@@ -232,11 +249,49 @@ export class TextTool extends AbstractAnnotationTool {
             font: 'normal normal 14px sans-serif'
         });
 
-        this.editors.push(editor);
-        this.add(editor.getText());
+        const text = editor.getText();
+        this.editors.set(editor, text);
+        this.add(text);
+
+        // 如果此前存在由于被UndoAdd隐藏的编辑器，那么移除它，因为一旦往容器中添加新的图形，RedoAdd将不可用
+        // 索引这些犹豫UndoAdd而被隐藏的编辑器已经没用了
+        this.removeHiddenEditors();
     }
 
     onMouseMove(_mouseMoveEvent: MouseEvent): void {
+    }
+
+    update(_observable: TypedObservable): void {
+        // 当某个Text被UndoAdd或者RedoAdd的时候，把对应的编辑器隐藏/展示
+        const textsInContainer = new Set<Text>();
+        for (let containerElement of this.container) {
+            if(containerElement instanceof Text){
+                textsInContainer.add(containerElement);
+            }
+        }
+
+        this.editors.forEach((text, editor)=>{
+            if(!textsInContainer.has(text)){
+                // 说明Text已经被UndoAdd了
+                // 需要确保对应的编辑器也被隐藏
+                console.log('检测到Text已经被UndoAdd了：', text);
+                if(!this.editorsHiddenByUndoAdd.has(editor)){
+                    editor.hide();
+                    this.editorsHiddenByUndoAdd.add(editor);
+                }
+            }
+        });
+
+        for (let hiddenEditor of this.editorsHiddenByUndoAdd) {
+            const text = this.editors.get(hiddenEditor);
+            if(text && textsInContainer.has(text)){
+                // 说明Text被RedoAdd
+                // 重新展示对应的编辑器
+                console.log('检测到Text已经被RedoAdd了：', text);
+                hiddenEditor.show();
+                this.editorsHiddenByUndoAdd.delete(hiddenEditor);
+            }
+        }
     }
 
 }
