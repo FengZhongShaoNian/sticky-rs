@@ -2,11 +2,10 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::path::Path;
-use std::sync::atomic::{AtomicUsize};
-use log::{info, trace, warn};
+use log::{info};
 
 use clap::Parser;
-use tauri::{CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
+use tauri::{CustomMenuItem, SystemTray, SystemTrayEvent, SystemTrayMenu};
 use tauri_plugin_log::LogTarget;
 
 use crate::image_io::{read_image, write_image};

@@ -1,6 +1,6 @@
 use std::sync::atomic::{AtomicUsize, Ordering};
-use log::{info, trace, warn};
-use tauri::{App, AppHandle, LogicalSize, Manager, PhysicalSize, Window};
+use log::{info};
+use tauri::{AppHandle, LogicalSize, Manager, PhysicalSize, Window};
 use crate::events;
 use crate::image_io::get_image_size;
 
