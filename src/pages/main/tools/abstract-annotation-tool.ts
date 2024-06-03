@@ -1,10 +1,5 @@
 import {GraphContainer, Graph} from "../graphs/graph.ts";
 
-export interface StyleContext {
-    strokeWidth: number,
-    strokeColor: string,
-}
-
 type MouseEventListener = (event: MouseEvent) => void;
 type WheelEventListener = (event: WheelEvent) => void;
 export abstract class AbstractAnnotationTool {
@@ -18,16 +13,9 @@ export abstract class AbstractAnnotationTool {
     private mouseOutEventListener: MouseEventListener | null = null;
     private wheelEventListener: WheelEventListener | null = null;
 
-    protected styleContext: StyleContext;
-
     protected constructor(container: GraphContainer, touchpad: HTMLElement) {
         this.container = container;
         this.touchpad = touchpad;
-
-        this.styleContext = {
-            strokeWidth: 1,
-            strokeColor: 'red',
-        }
     }
 
     /**
@@ -42,23 +30,12 @@ export abstract class AbstractAnnotationTool {
     onMouseUp(_mouseUpEvent: MouseEvent){
     }
 
-    onWheel(wheelEvent: WheelEvent): void {
-        const MIN_STROKE_WIDTH = 1;
-        const MAX_STROKE_WIDTH = 10;
+    onWheel(_wheelEvent: WheelEvent): void {
+    }
 
-        // 向上滚动
-        let scrollUp = wheelEvent.deltaY < 0;
-        if(scrollUp){
-            this.styleContext.strokeWidth += 1;
-            if(this.styleContext.strokeWidth > MAX_STROKE_WIDTH){
-                this.styleContext.strokeWidth = MAX_STROKE_WIDTH;
-            }
-        }else {
-            this.styleContext.strokeWidth -= 1;
-            if(this.styleContext.strokeWidth < MIN_STROKE_WIDTH){
-                this.styleContext.strokeWidth = MIN_STROKE_WIDTH;
-            }
-        }
+    // 判断滚轮是否是向上滚动
+    static isScrollUp(wheelEvent: WheelEvent){
+        return wheelEvent.deltaY < 0;
     }
 
     /**

@@ -4,6 +4,11 @@ import {CrossHair} from "../cursor.ts";
 import {Ellipse} from "../graphs/ellipse.ts";
 import {GraphContainer} from "../graphs/graph.ts";
 
+interface StyleContext {
+    strokeWidth: number,
+    strokeColor: string,
+}
+
 export class EllipseTool extends AbstractAnnotationTool{
 
     private ellipse: Ellipse | null = null;
@@ -12,9 +17,15 @@ export class EllipseTool extends AbstractAnnotationTool{
 
     private customCursor: CrossHair;
 
+    private readonly styleContext: StyleContext;
+
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
         this.customCursor = new CrossHair(touchpad);
+        this.styleContext = {
+            strokeWidth: 1,
+            strokeColor: 'red'
+        };
     }
 
     name(): string {
@@ -65,6 +76,15 @@ export class EllipseTool extends AbstractAnnotationTool{
 
     onWheel(wheelEvent: WheelEvent): void {
         super.onWheel(wheelEvent);
+        const MIN_STROKE_WIDTH = 1;
+        const MAX_STROKE_WIDTH = 10;
+
+        let scrollUp = EllipseTool.isScrollUp(wheelEvent);
+        if(scrollUp){
+            this.styleContext.strokeWidth = Math.min(this.styleContext.strokeWidth+1, MAX_STROKE_WIDTH);
+        }else {
+            this.styleContext.strokeWidth = Math.max(this.styleContext.strokeWidth-1, MIN_STROKE_WIDTH);
+        }
         this.customCursor.style.strokeWidth = this.styleContext.strokeWidth;
     }
 

@@ -4,16 +4,26 @@ import {ToolName} from "../../../common/tool-name.ts";
 import {GraphContainer} from "../graphs/graph.ts";
 import {Line} from "../graphs/line.ts";
 
+interface StyleContext {
+    strokeWidth: number,
+    strokeColor: string,
+}
+
 export class MarkerPenTool extends AbstractAnnotationTool {
     private line: Line | null = null;
     private mouseDownEvent: MouseEvent | null = null;
     private points: Array<number> | null = null;
     private customCursor: Circle;
 
+    private readonly styleContext: StyleContext;
+
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
-        this.styleContext.strokeWidth = 20;
-        this.styleContext.strokeColor = 'rgba(255,0,0,0.3)';
+
+        this.styleContext = {
+            strokeWidth: 20,
+            strokeColor: 'rgba(255,0,0,0.3)'
+        };
 
         this.customCursor = new Circle(touchpad);
         this.customCursor.style.diameter = this.styleContext.strokeWidth;
@@ -67,18 +77,11 @@ export class MarkerPenTool extends AbstractAnnotationTool {
         const MIN_STROKE_WIDTH = 1;
         const MAX_STROKE_WIDTH = 50;
 
-        // 向上滚动
-        let scrollUp = wheelEvent.deltaY < 0;
+        let scrollUp = MarkerPenTool.isScrollUp(wheelEvent);
         if(scrollUp){
-            this.styleContext.strokeWidth += 1;
-            if(this.styleContext.strokeWidth > MAX_STROKE_WIDTH){
-                this.styleContext.strokeWidth = MAX_STROKE_WIDTH;
-            }
+            this.styleContext.strokeWidth = Math.min(this.styleContext.strokeWidth+1, MAX_STROKE_WIDTH);
         }else {
-            this.styleContext.strokeWidth -= 1;
-            if(this.styleContext.strokeWidth < MIN_STROKE_WIDTH){
-                this.styleContext.strokeWidth = MIN_STROKE_WIDTH;
-            }
+            this.styleContext.strokeWidth = Math.max(this.styleContext.strokeWidth-1, MIN_STROKE_WIDTH);
         }
         this.customCursor.style.diameter = this.styleContext.strokeWidth;
     }

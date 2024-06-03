@@ -2,7 +2,6 @@ import {CrossHair} from "../cursor.ts";
 import {ToolName} from "../../../common/tool-name.ts";
 import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {GraphContainer} from "../graphs/graph.ts";
-import {Mosaic} from "../graphs/mosaic.ts";
 import {GaussianBlur} from "../graphs/gaussian-blur.ts";
 
 export class GaussianBlurTool extends AbstractAnnotationTool {

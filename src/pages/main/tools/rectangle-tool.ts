@@ -4,17 +4,26 @@ import {AbstractAnnotationTool} from "./abstract-annotation-tool.ts";
 import {GraphContainer} from "../graphs/graph.ts";
 import {Rect} from "../graphs/rect.ts";
 
+interface StyleContext {
+    strokeWidth: number,
+    strokeColor: string,
+}
+
 export class RectangleTool extends AbstractAnnotationTool {
 
     private rect: Rect | null = null;
-
     private mouseDownEvent: MouseEvent | null = null;
-
     private customCursor: CrossHair;
+
+    private readonly styleContext: StyleContext;
 
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
         this.customCursor = new CrossHair(touchpad);
+        this.styleContext = {
+            strokeWidth: 1,
+            strokeColor: 'red'
+        };
     }
 
     name(): string {
@@ -68,7 +77,15 @@ export class RectangleTool extends AbstractAnnotationTool {
     }
 
     onWheel(wheelEvent: WheelEvent): void {
-        super.onWheel(wheelEvent);
+        const MIN_STROKE_WIDTH = 1;
+        const MAX_STROKE_WIDTH = 10;
+
+        let scrollUp = RectangleTool.isScrollUp(wheelEvent);
+        if(scrollUp){
+            this.styleContext.strokeWidth = Math.min(this.styleContext.strokeWidth+1, MAX_STROKE_WIDTH);
+        }else {
+            this.styleContext.strokeWidth = Math.max(this.styleContext.strokeWidth-1, MIN_STROKE_WIDTH);
+        }
         this.customCursor.style.strokeWidth = this.styleContext.strokeWidth;
     }
 }

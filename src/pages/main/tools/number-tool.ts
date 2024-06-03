@@ -4,15 +4,25 @@ import {CircleNumber} from "../cursor.ts";
 import {GraphContainer} from "../graphs/graph.ts";
 import {Image} from "../graphs/image.ts";
 
+interface StyleContext {
+    strokeWidth: number,
+    strokeColor: string,
+}
+
 export class NumberTool extends AbstractAnnotationTool {
 
     private num: number;
     private customCursor: CircleNumber;
 
+    private readonly styleContext: StyleContext;
+
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
-        this.styleContext.strokeWidth = 20;
-        this.styleContext.strokeColor = 'rgba(255,0,0,0.3)';
+
+        this.styleContext = {
+            strokeWidth: 20,
+            strokeColor: 'rgba(255,0,0,0.3)'
+        };
 
         this.num = 1;
         // 1秒中内没有移动则光标自动隐藏

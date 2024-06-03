@@ -16,6 +16,8 @@ class TextEditor {
     private readonly text: Text;
     private style: TextEditorStyle;
     private readonly initialHeight: number;
+    // element是否获得了焦点
+    private _isFocus: boolean;
 
     constructor(style: TextEditorStyle) {
         this.style = style;
@@ -30,6 +32,7 @@ class TextEditor {
 
         document.body.appendChild(this.element);
         this.element.focus();
+        this._isFocus = true;
 
         this.initialHeight = TextEditor.getElementHeight(this.element);
         console.log('编辑器元素的初始高度：%d', this.initialHeight);
@@ -47,18 +50,22 @@ class TextEditor {
             visible: false
         });
 
-        this.handleInput();
+        this.handleEvents();
     }
 
-    private handleInput() {
+    private handleEvents() {
         this.element.addEventListener('input', ()=>{
             this.updateText(false);
         });
 
+        this.element.addEventListener('focus', ()=> {
+            this._isFocus = true;
+        })
         this.element.addEventListener('focusout', () => {
             this.updateText(true);
             // 在失去焦点的情况下隐藏编辑器
             this.hide();
+            this._isFocus = false;
         });
 
         this.element.addEventListener('keydown', (event)=>{
@@ -87,13 +94,24 @@ class TextEditor {
         }, true);
     }
 
+    addWheelEventListener(listener: EventListenerOrEventListenerObject){
+        this.element.addEventListener('wheel', listener);
+    }
+
     updateText(visible: boolean){
+        const style = window.getComputedStyle(this.element);
+        const left = parseInt(style.left.replace('px', ''));
+        const top = parseInt(style.top.replace('px', ''));
+        const lineHeight = parseInt(style.lineHeight.replace('px', ''));
         const content = this.getElementTextContent();
+
         this.text.set({
+            x: left,
+            y: top + lineHeight / 2,
             content,
-            font: this.style.font,
-            fontColor: this.style.color,
-            lineHeight: this.calculateLineHeight(),
+            font: style.font,
+            fontColor: style.color,
+            lineHeight,
             maxWidth: this.element.offsetWidth,
             visible,
         });
@@ -126,13 +144,19 @@ class TextEditor {
         return parseInt(style.fontSize);
     }
 
+    setFontSize(fontSize: number) {
+        this.element.style.fontSize = fontSize + 'px';
+        const lineHeight = this.calculateLineHeight();
+        this.element.style.lineHeight = lineHeight + 'px';
+    }
+
     private calculateLineHeight(){
         if(this.initialHeight === undefined){
             throw new Error('initialHeight === undefined');
         }
 
         const fontSize = TextEditor.getFontSize(this.element);
-        let lineHeight = fontSize * 1.4;
+        let lineHeight = Math.floor(fontSize * 1.35);
         if(this.initialHeight > lineHeight){
             lineHeight = this.initialHeight;
         }
@@ -157,9 +181,19 @@ class TextEditor {
     getBoundingClientRect() {
         return this.element.getBoundingClientRect();
     }
+
+    isFocus(){
+        return this._isFocus;
+    }
 }
 
+interface StyleContext {
+    fontColor: string,
+    fontSize: number
+}
 export class TextTool extends AbstractAnnotationTool implements Observer {
+
+    private readonly styleContext: StyleContext;
 
     private readonly editors: Map<TextEditor, Text>;
     private customCursor: TextCursor;
@@ -169,9 +203,11 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
 
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
+        this.styleContext = {
+            fontColor: 'red',
+            fontSize: 14
+        }
         this.editors = new Map<TextEditor, Text>;
-        this.styleContext.strokeWidth = 14;
-        this.styleContext.strokeColor = 'red';
         this.customCursor = new TextCursor(touchpad);
         this.editorsHiddenByUndoAdd = new Set<TextEditor>();
     }
@@ -221,6 +257,14 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
         }
     }
 
+    findFocusEditor(){
+        for (let editor of this.editors.keys()) {
+            if(editor.isFocus()){
+                return editor;
+            }
+        }
+    }
+
     onMouseDown(mouseDownEvent: MouseEvent): void {
         // 避免编辑器失去焦点
         mouseDownEvent.preventDefault();
@@ -245,8 +289,12 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
         const editor = new TextEditor({
             x: mouseDownEvent.x,
             y: mouseDownEvent.y,
-            color: this.styleContext.strokeColor,
-            font: 'normal normal 14px sans-serif'
+            color: this.styleContext.fontColor,
+            font: `normal normal ${this.styleContext.fontSize}px sans-serif`
+        });
+
+        editor.addWheelEventListener((wheelEvent)=>{
+            this.onWheel(wheelEvent as WheelEvent);
         });
 
         const text = editor.getText();
@@ -294,4 +342,22 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
         }
     }
 
+
+    onWheel(wheelEvent: WheelEvent): void {
+        const MIN_FONT_SIZE = 14;
+        const MAX_FONT_SIZE = 32;
+        console.log('onWheel ', wheelEvent);
+
+        let scrollUp = TextTool.isScrollUp(wheelEvent);
+        if(scrollUp){
+            this.styleContext.fontSize = Math.min(this.styleContext.fontSize+1, MAX_FONT_SIZE);
+        }else {
+            this.styleContext.fontSize = Math.max(this.styleContext.fontSize-1, MIN_FONT_SIZE);
+        }
+        const editor = this.findFocusEditor();
+        console.log('获得焦点的编辑器', editor);
+        if(editor){
+            editor.setFontSize(this.styleContext.fontSize);
+        }
+    }
 }
