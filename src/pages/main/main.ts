@@ -22,6 +22,8 @@ import {
 
 import {i18n} from "../../common/translation.ts"
 
+const isDevEnvironment = import.meta.env.MODE === 'development';
+
 const editor = new Editor();
 const toolbarWindow = createToolbarWindow();
 const customContextMenuWindow = createCustomContextMenu();
@@ -96,7 +98,13 @@ async function openImage(imagePath: string) {
 
 function createCustomContextMenu() {
     const popupMenuWindowLabel = generateContextMenuWindowLabel(appWindow.label);
-    const size = new LogicalSize(200, 170);
+    let size;
+    if(isDevEnvironment){
+        size = new LogicalSize(200, 170);
+    }else {
+        size = new LogicalSize(200, 130);
+    }
+
     return  new WebviewWindow(popupMenuWindowLabel, {
         url: 'context-menu.html',
         width: size.width,

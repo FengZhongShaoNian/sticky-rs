@@ -4,7 +4,9 @@
 
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
 import {appWindow} from "@tauri-apps/api/window";
-import {i18n} from '../../common/translation.ts'
+import {i18n} from '../../common/translation.ts';
+
+const isDevEnvironment = import.meta.env.MODE === 'development';
 
 async function toggleToolbar(){
   await sendEventToMainWindow(CustomEvent.MENU_TOGGLE_TOOLBAR, {});
@@ -38,7 +40,7 @@ async function openDevTools(){
     <div class="menu-item" @click="copyToClipboard">{{i18n.t('contextMenu.copyToClipboard')}}</div>
     <div class="menu-item" @click="exportToFile">{{i18n.t('contextMenu.exportToFile')}}</div>
     <div class="menu-item" @click="closeWindow">{{i18n.t('contextMenu.closeWindow')}}</div>
-    <div class="menu-item" @click="openDevTools">{{i18n.t('contextMenu.openDevTools')}}</div>
+    <div class="menu-item" v-if="isDevEnvironment" @click="openDevTools">{{i18n.t('contextMenu.openDevTools')}}</div>
   </div>
 </template>
 

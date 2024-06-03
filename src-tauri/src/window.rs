@@ -10,6 +10,7 @@ static MAIN_WINDOW_COUNTER: AtomicUsize = AtomicUsize::new(0);
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 pub fn open_devtools(window: tauri::Window) {
+    #[cfg(debug_assertions)]
     window.open_devtools();
 }
 
@@ -52,13 +53,11 @@ fn create_main_window_with_initial_window_size(handle: &AppHandle, image_path: S
         .center()
         .build()
         .unwrap();
-    // main_window.open_devtools();
 
     let scale_factor = main_window.scale_factor().unwrap();
     let logical_size: LogicalSize<f64> = initial_window_size.to_logical(scale_factor);
     set_fixed_size_with_ref(&main_window, logical_size);
     main_window.show().unwrap();
-
 
     // Set up a listener to receive events from the front-end,
     // and upon completion of the front-end page loading, notify the window to open the specified image.
