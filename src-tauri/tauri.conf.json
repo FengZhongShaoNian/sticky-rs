@@ -38,7 +38,7 @@
     },
     "bundle": {
       "active": true,
-      "targets": ["deb", "nsis", "msi", "app", "dmg", "updater"],
+      "targets": "all",
       "identifier": "com.github.fengzhongshaonian.sticky-rs",
       "icon": [
         "icons/32x32.png",

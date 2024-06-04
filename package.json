@@ -8,7 +8,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "build-debug": "tauri build --debug"
+    "build-debug": "tauri build --debug",
+    "build-container-image": "podman build -t stick_rs/tauri:latest ."
   },
   "dependencies": {
     "@tauri-apps/api": "^1",
