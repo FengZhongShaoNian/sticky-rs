@@ -100,9 +100,10 @@ function createCustomContextMenu() {
     const popupMenuWindowLabel = generateContextMenuWindowLabel(appWindow.label);
     let size;
     if(isDevEnvironment){
-        size = new LogicalSize(200, 170);
+        size = new LogicalSize(200, 34*5);
     }else {
-        size = new LogicalSize(200, 130);
+        // 非开发环境下少了一个【打开开发者工具】的菜单项，所以高度调整一下
+        size = new LogicalSize(200, 34*4);
     }
 
     return  new WebviewWindow(popupMenuWindowLabel, {

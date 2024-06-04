@@ -46,8 +46,7 @@ async function openDevTools(){
 
 <style scoped>
 .container {
-  flex-direction: column;
-  display: flex;
+  display: block;
   margin: 0;
   padding: 0;
 }
@@ -56,6 +55,7 @@ async function openDevTools(){
   padding: 5px 25px;
   color: #eff0f1;
   cursor: pointer;
+  height: 24px;
 }
 
 .container .menu-item:hover {
