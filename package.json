@@ -10,7 +10,7 @@
     "tauri": "tauri",
     "build-debug": "tauri build --debug",
     "build-container-image": "podman build -t stick_rs/tauri:latest .",
-    "create-podman-container": "bash ./create-container.sh"
+    "run-podman-container": "bash ./run-container.sh"
   },
   "dependencies": {
     "@tauri-apps/api": "^1",
