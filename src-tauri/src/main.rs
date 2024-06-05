@@ -28,8 +28,8 @@ fn get_image_path_from_cmd_args(args: Args) -> String{
     let path = Path::new(&args.path);
 
     if !path.exists() {
-        panic!("Image \"{}\" not exits! (If you are running an AppImage，you need to specify the absolute path to the image.)",
-               args.path);
+        panic!("The image \"{}\" does not exist! (If you are running an AppImage，\
+        you need to specify the absolute path to the image.)", args.path);
     }
     args.path
 }
