@@ -70,7 +70,7 @@ else
 fi
 
 ( cd "/root/.cache/tauri" && wget -q -4 -N https://raw.staticdn.net/tauri-apps/linuxdeploy-plugin-gtk/master/linuxdeploy-plugin-gtk.sh )
-( cd "/root/.cache/tauri" && wget -q -4 -N https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy/linuxdeploy-${linuxdeploy_arch}.AppImage )
+( cd "/root/.cache/tauri" && wget -q -4 -N https://hub.gitmirror.com/https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy/linuxdeploy-${linuxdeploy_arch}.AppImage )
 
 chmod +x "/root/.cache/tauri/linuxdeploy-plugin-gtk.sh"
 chmod +x "/root/.cache/tauri/linuxdeploy-${linuxdeploy_arch}.AppImage"
