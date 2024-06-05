@@ -31,5 +31,8 @@
     "exportImageToClipboardErr": "复制图片失败",
     "exportImageToFileOK": "图片已经成功导出",
     "exportImageToFileErr": "图片导出失败"
+  },
+  "graph": {
+    "textEditorMovementTips": "按住Alt键移动鼠标可以更改文本框的位置"
   }
 }

@@ -3,6 +3,7 @@ import {ToolName} from "../../../common/tool-name.ts";
 import {GraphContainer, Observer, TypedObservable} from "../graphs/graph.ts";
 import {Text} from "../graphs/text.ts";
 import {TextCursor} from "../cursor.ts";
+import {i18n} from "../../../common/translation.ts";
 
 interface TextEditorStyle {
     x: number,
@@ -29,6 +30,7 @@ class TextEditor {
         this.element.style.top = style.y + 'px';
         this.element.style.font = this.style.font;
         this.element.style.maxWidth = this.calculateElementMaxWidth() + 'px';
+        this.element.title = i18n.t('graph.textEditorMovementTips');
 
         document.body.appendChild(this.element);
         this.element.focus();
@@ -185,6 +187,15 @@ class TextEditor {
     isFocus(){
         return this._isFocus;
     }
+
+    moveTo(x: number, y: number) {
+        this.style.x = x;
+        this.style.y = y;
+        this.element.style.left = x + 'px';
+        this.element.style.top = y + 'px';
+        this.element.style.maxWidth = this.calculateElementMaxWidth() + 'px';
+        this.updateText(false);
+    }
 }
 
 interface StyleContext {
@@ -203,6 +214,7 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
 
     constructor(container: GraphContainer, touchpad: HTMLElement) {
         super(container, touchpad);
+        this.ignoreNonLeftMouseButtonEvents = false;
         this.styleContext = {
             fontColor: 'red',
             fontSize: 14
@@ -266,6 +278,10 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
     }
 
     onMouseDown(mouseDownEvent: MouseEvent): void {
+        if(mouseDownEvent.buttons != 1){
+            // 由于按下的不是鼠标左键，所以忽略
+            return;
+        }
         // 避免编辑器失去焦点
         mouseDownEvent.preventDefault();
 
@@ -306,7 +322,13 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
         this.removeHiddenEditors();
     }
 
-    onMouseMove(_mouseMoveEvent: MouseEvent): void {
+    onMouseMove(mouseMoveEvent: MouseEvent): void {
+        if(mouseMoveEvent.altKey){
+            const editor = this.findFocusEditor();
+            if(editor){
+                editor.moveTo(mouseMoveEvent.x, mouseMoveEvent.y);
+            }
+        }
     }
 
     update(_observable: TypedObservable): void {

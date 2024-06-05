@@ -7,15 +7,19 @@ export abstract class AbstractAnnotationTool {
     // 触摸板，一个大小与窗口等同的HTML元素，用于感知鼠标事件
     protected readonly touchpad: HTMLElement;
 
+    // 是否忽略鼠标左键没有被按下的鼠标事件。子类可以通过设置这个属性的值来告知自己是否需要忽略与鼠标左键无关的事件。默认是true。
+    // （如果为true，那么只有鼠标左键被按下/松开的事件、鼠标左键被按下的情况下发生的鼠标移动事件会被传递给子类，而其它键的事件则不会被传递给子类）
+    protected ignoreNonLeftMouseButtonEvents: boolean;
+
     private mouseDownEventListener: MouseEventListener | null = null;
     private mouseMoveEventListener: MouseEventListener | null = null;
     private mouseUpEventListener: MouseEventListener | null = null;
-    private mouseOutEventListener: MouseEventListener | null = null;
     private wheelEventListener: WheelEventListener | null = null;
 
     protected constructor(container: GraphContainer, touchpad: HTMLElement) {
         this.container = container;
         this.touchpad = touchpad;
+        this.ignoreNonLeftMouseButtonEvents = true;
     }
 
     /**
@@ -45,7 +49,7 @@ export abstract class AbstractAnnotationTool {
         const LEFT_BUTTON = 1;
         this.mouseDownEventListener = (event) => {
             const isTheLeftMouseButtonPressed = (event.buttons == LEFT_BUTTON);
-            if (!isTheLeftMouseButtonPressed) {
+            if (this.ignoreNonLeftMouseButtonEvents && !isTheLeftMouseButtonPressed) {
                 return;
             }
             console.log('mouseDown event', event);
@@ -53,7 +57,7 @@ export abstract class AbstractAnnotationTool {
         }
         this.mouseMoveEventListener = (event) => {
             const isTheLeftMouseButtonPressed = (event.buttons == LEFT_BUTTON);
-            if (!isTheLeftMouseButtonPressed) {
+            if (this.ignoreNonLeftMouseButtonEvents && !isTheLeftMouseButtonPressed) {
                 return;
             }
             console.log('mouseMove event', event);
@@ -61,7 +65,7 @@ export abstract class AbstractAnnotationTool {
         }
         this.mouseUpEventListener = (event) => {
             const isTheLeftMouseButton = (event.buttons == LEFT_BUTTON);
-            if (!isTheLeftMouseButton) {
+            if (this.ignoreNonLeftMouseButtonEvents && !isTheLeftMouseButton) {
                 return;
             }
             console.log('mouseUp event', event);
@@ -92,9 +96,6 @@ export abstract class AbstractAnnotationTool {
         }
         if (this.mouseUpEventListener != null) {
             this.touchpad.removeEventListener('mouseup', this.mouseUpEventListener);
-        }
-        if(this.mouseOutEventListener != null){
-            this.touchpad.removeEventListener('mouseout', this.mouseOutEventListener);
         }
         if(this.wheelEventListener != null){
             this.touchpad.removeEventListener('wheel', this.wheelEventListener);

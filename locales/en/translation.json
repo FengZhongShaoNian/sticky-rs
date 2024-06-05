@@ -31,5 +31,8 @@
     "exportImageToClipboardErr": "Failed to copy the image to the clipboard",
     "exportImageToFileOK": "The image has been successfully exported to file",
     "exportImageToFileErr": "Failed to export the image"
+  },
+  "graph": {
+    "textEditorMovementTips": "Hold down the Alt key and move the mouse to change the position of the text box"
   }
 }
