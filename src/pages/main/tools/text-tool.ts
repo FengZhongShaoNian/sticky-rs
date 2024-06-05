@@ -302,7 +302,7 @@ export class TextTool extends AbstractAnnotationTool implements Observer {
         this.add(text);
 
         // 如果此前存在由于被UndoAdd隐藏的编辑器，那么移除它，因为一旦往容器中添加新的图形，RedoAdd将不可用
-        // 索引这些犹豫UndoAdd而被隐藏的编辑器已经没用了
+        // 所以这些由于UndoAdd而被隐藏的编辑器已经没用了
         this.removeHiddenEditors();
     }
 
