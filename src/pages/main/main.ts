@@ -3,7 +3,7 @@ import {
     appWindow,
     LogicalPosition,
     LogicalSize,
-    PhysicalPosition,
+    PhysicalPosition, PhysicalSize,
     WebviewWindow
 } from "@tauri-apps/api/window";
 import {invoke} from '@tauri-apps/api/tauri';
@@ -42,10 +42,12 @@ editor.addZoomEventListener((zoomEvent)=>{
 const marginMainWindowBottom = 10;
 
 // 根据当前主窗口的位置的大小计算出一个合适的位置用于展示工具条窗口
-async function calculateSuitablePositionForToolbarWindow() {
+async function calculateSuitablePositionForToolbarWindow(toolbarSize: PhysicalSize) {
     const mainWindowInnerSize = await appWindow.innerSize();
     const mainWindowInnerPos = await appWindow.innerPosition();
-    return new PhysicalPosition(mainWindowInnerPos.x,
+    // 让工具条的中点和主窗口的中点的x坐标一致（居中显示工具条）
+    const centerX = mainWindowInnerPos.x + mainWindowInnerSize.width/2;
+    return new PhysicalPosition(centerX - toolbarSize.width/2,
         mainWindowInnerPos.y + mainWindowInnerSize.height + marginMainWindowBottom);
 }
 
@@ -71,7 +73,8 @@ function createToolbarWindow() {
     });
 
     let ignored = appWindow.onMoved(async () => {
-        const toolbarPosition = await calculateSuitablePositionForToolbarWindow();
+        const physicalSize = await toolbarWindow.innerSize();
+        const toolbarPosition = await calculateSuitablePositionForToolbarWindow(physicalSize);
         await toolbarWindow.setPosition(toolbarPosition);
     });
 
@@ -79,7 +82,8 @@ function createToolbarWindow() {
 }
 
 async function showToolbarWindow(){
-    const toolbarPosition = await calculateSuitablePositionForToolbarWindow();
+    const physicalSize = await toolbarWindow.innerSize();
+    const toolbarPosition = await calculateSuitablePositionForToolbarWindow(physicalSize);
     await toolbarWindow.setPosition(toolbarPosition);
     await toolbarWindow.show();
 }
