@@ -47,6 +47,7 @@ export abstract class Cursor {
             this.cursorEffectElement.removeEventListener('mouseout', this.mouseOutEventListener);
         }
         this.cursorEffectElement.style.cursor = 'auto';
+        this.hide();
     }
 
     onMouseMove(event: MouseEvent) {
