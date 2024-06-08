@@ -45,8 +45,8 @@ const buttons = reactive([
   {toolName: ToolName.ERASER_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.eraserTool'), icon: iconDrawEraser},
   {toolName: ToolName.UNDO_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.undoTool'), icon: iconEditUndo},
   {toolName: ToolName.REDO_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.redoTool'), icon: iconEditRedo},
-  {toolName: ToolName.SAVE_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.copyTool'), icon: iconDocumentSave},
-  {toolName: ToolName.COPY_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.saveTool'), icon: iconEditCopy},
+  {toolName: ToolName.SAVE_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.saveTool'), icon: iconDocumentSave},
+  {toolName: ToolName.COPY_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.copyTool'), icon: iconEditCopy},
   {toolName: ToolName.OK_TOOL, checkable: false, checked: false, title: i18n.t('toolbar.okTool'), icon: iconDialogOK},
 ]);
 
