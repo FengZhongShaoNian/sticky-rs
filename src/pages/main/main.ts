@@ -211,7 +211,11 @@ async function exportImageToFile() {
     if (dataURL) {
         const base64 = dataURL.split(',')[1];
         return saveImageFile(base64)
-            .then(() => tryToSendNotification(i18n.t('notifications.titleOK'), i18n.t('notifications.exportImageToFileOK')));
+            .then(filePath => {
+                if(filePath){
+                    tryToSendNotification(i18n.t('notifications.titleOK'), i18n.t('notifications.exportImageToFileOK'));
+                }
+            });
     } else {
         return tryToSendNotification(i18n.t('notifications.titleErr'), i18n.t('notifications.exportImageToFileErr'));
     }
@@ -257,11 +261,13 @@ async function saveImageFile(base64EncodedImage: string){
         if(!filePath.endsWith('.png')){
             filePath = filePath + '.png';
         }
-        return invoke('write_image', {
+        await invoke('write_image', {
             path: filePath,
             base64EncodedImage
         });
+        return filePath;
     }
+    return null;
 }
 
 document.addEventListener("DOMContentLoaded", async function () {
