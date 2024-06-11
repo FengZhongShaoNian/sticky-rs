@@ -1,7 +1,7 @@
 # sticky-rs
 
 ## Description（[中文简介](./README-CN.md)）
-A Tauri-powered image sticky-note app, enabling users to affix pictures to their desktop and keep them always on display. It comes equipped with various annotation capabilities.
+A Tauri-powered image sticky-note app（Support Linux）, enabling users to affix pictures to their desktop and keep them always on display. It comes equipped with various annotation capabilities.
 Among the annotation options are:
 
 - Rectangular framing
