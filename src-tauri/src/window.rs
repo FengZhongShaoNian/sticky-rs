@@ -2,6 +2,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use log::{info};
 use tauri::{AppHandle, LogicalSize, Manager, PhysicalSize, Window};
 use crate::events;
+use crate::events::OpenImageEventPayload;
 use crate::image_io::get_image_size;
 
 // A window counter whose value increments by 1 each time a window is created
@@ -64,11 +65,14 @@ fn create_main_window_with_initial_window_size(handle: &AppHandle, image_path: S
     handle.listen_global("page-loaded", move |event| {
         let payload = event.payload();
         if let Some(data) = payload {
-            let page_loaded_event: events::PageLoadedEvent = serde_json::from_str(data).unwrap();
-            if page_loaded_event.send_from == window_label {
+            let page_loaded_event_payload: events::PageLoadedEventPayload = serde_json::from_str(data).unwrap();
+            if page_loaded_event_payload.send_from == window_label {
                 info!("[{window_label}] receive page-loaded event");
 
-                main_window.emit("open-image", image_path.clone()).unwrap()
+                main_window.emit("open-image", OpenImageEventPayload {
+                    send_to: window_label.clone(),
+                    image_path: image_path.clone()
+                }).unwrap();
             }
         }
     });

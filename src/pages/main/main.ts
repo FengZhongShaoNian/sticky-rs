@@ -270,11 +270,23 @@ async function saveImageFile(base64EncodedImage: string){
     return null;
 }
 
+interface OpenImageEventPayload{
+    // label of receiver window
+    send_to: string,
+
+    // path of image to open
+    image_path: string,
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     await logger.info('DOMContentLoaded').catch(console.error);
 
-    await listen<string>('open-image', async (event: Event<string>) => {
-        const imagePath = event.payload;
+    await listen<OpenImageEventPayload>('open-image', async (event: Event<OpenImageEventPayload>) => {
+        const openImageEventPayload = event.payload;
+        if(openImageEventPayload.send_to != appWindow.label){
+            return;
+        }
+        const imagePath = openImageEventPayload.image_path;
         await logger.info('received imagePath: ' + imagePath);
 
         await openImage(imagePath);
