@@ -16,7 +16,7 @@
 - 橡皮擦
 
 下面是软件界面的截图：
-![UI截图](screenshot/ui.png)
+![UI截图](https://raw.gitmirror.com/FengZhongShaoNian/sticky-rs/master/screenshot/ui.png)
 
 ## 用法
 

@@ -17,7 +17,7 @@ Among the annotation options are:
 - Virtual eraser
 
 Have a look at the software's interface through the screenshot provided:
-![UI截图](screenshot/ui.png)
+![UI截图](https://raw.gitmirror.com/FengZhongShaoNian/sticky-rs/master/screenshot/ui.png)
 
 ## Usage
 
