@@ -143,6 +143,12 @@ async function showCustomContextMenu(position: LogicalPosition) {
     await customContextMenuWindow.setFocus();
 }
 
+async function closeCurrentWindow() {
+    await toolbarWindow.close();
+    await customContextMenuWindow.close();
+    await appWindow.close();
+}
+
 async function handleCustomContextMenuEvents(){
     await listen(CustomEvent.MENU_TOGGLE_TOOLBAR, async (event) => {
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
@@ -166,9 +172,7 @@ async function handleCustomContextMenuEvents(){
 
     await listen(CustomEvent.MENU_CLOSE_WINDOW, async (event) => {
         await logger.trace(`received ${CustomEvent.MENU_TOGGLE_TOOLBAR} from ${event.windowLabel}`)
-        await toolbarWindow.close();
-        await customContextMenuWindow.close();
-        await appWindow.close();
+        await closeCurrentWindow();
     });
 
     await listen(CustomEvent.MENU_OPEN_DEV_TOOLS, async (event) => {
@@ -317,4 +321,10 @@ document.addEventListener('contextmenu', async (event) => {
 
 document.addEventListener('click', async (_event) => {
     await customContextMenuWindow.hide();
+});
+
+document.addEventListener('dblclick', async (_event) => {
+    if(!editor.isEditing()){
+        await closeCurrentWindow();
+    }
 });
