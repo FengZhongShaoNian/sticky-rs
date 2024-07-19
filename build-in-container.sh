@@ -32,7 +32,7 @@ registry = "sparse+https://rsproxy.cn/index/"
 EOF
 
 # 解决打包成AppImage后无法使用fcitx5输入法输入中文的问题
-apt install -y fcitx5-frontend-gtk3
+apt update && apt install -y fcitx5-frontend-gtk3
 
 # 解决打包成AppImage后无法使用ibus输入中文的问题
 apt install -y ibus-libpinyin
