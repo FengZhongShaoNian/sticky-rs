@@ -233,7 +233,8 @@ async function handleToolbarEvents(){
         }else if(toolName === ToolName.REDO_TOOL){
             editor.redo();
         }else if(toolName === ToolName.COPY_TOOL){
-            return await exportImageToClipboard();
+             await exportImageToClipboard();
+             return await exitEditModeAndHideToolbar();
         } else if(toolName === ToolName.SAVE_TOOL){
             return await exportImageToFile();
         }else if(toolName === ToolName.OK_TOOL){

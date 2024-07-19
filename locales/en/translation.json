@@ -20,7 +20,7 @@
     "eraserTool" : "Eraser",
     "undoTool" : "Undo",
     "redoTool" : "Redo",
-    "copyTool" : "Copy To Clipboard",
+    "copyTool" : "Copy To Clipboard And Hide Toolbar",
     "saveTool" : "Export To File",
     "okTool" : "Hide Toolbar"
   },

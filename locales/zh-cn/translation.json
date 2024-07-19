@@ -20,7 +20,7 @@
     "eraserTool" : "橡皮擦",
     "undoTool" : "撤销",
     "redoTool" : "重做",
-    "copyTool" : "复制到剪切板",
+    "copyTool" : "复制到剪切板并隐藏工具条",
     "saveTool" : "导出到文件",
     "okTool" : "隐藏工具条"
   },
