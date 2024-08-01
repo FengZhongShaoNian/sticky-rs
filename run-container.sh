@@ -3,7 +3,7 @@
 container_name="sticky_rs"
 
 is_container_exists(){
-  local output=$(podman ps  -a --format "table {{.Names}}" | grep sticky_rs)
+  local output=$(podman ps  -a --format "table {{.Names}}" | grep "$container_name")
   if [[ "$output" == "$container_name" ]];then
     return 0;
   else
@@ -12,7 +12,7 @@ is_container_exists(){
 }
 
 is_container_running(){
-  local output=$(podman ps --format "table {{.Names}}" | grep sticky_rs)
+  local output=$(podman ps --format "table {{.Names}}" | grep "$container_name")
     if [[ "$output" == "$container_name" ]];then
       return 0;
     else
