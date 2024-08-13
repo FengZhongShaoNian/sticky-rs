@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories={{{categories}}}
 Comment={{{comment}}}
-Exec={{{exec}}} -p %f
+Exec=GDK_BACKEND=x11 {{{exec}}} -p %f
 Icon={{{icon}}}
 Name={{{name}}}
 Terminal=false
