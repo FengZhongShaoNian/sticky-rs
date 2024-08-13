@@ -19,10 +19,25 @@ Among the annotation options are:
 Have a look at the software's interface through the screenshot provided:
 ![UI截图](https://raw.gitmirror.com/FengZhongShaoNian/sticky-rs/master/screenshot/ui.png)
 
+## Compile
+
+```shell
+cd sticky-rs
+pnpm install
+pnpm run tauri build
+```
+
+## Installation
+
+For archlinux AUR users:
+```shell
+yay -S sticky-rs-git
+```
+
 ## Usage
 
 ```shell
-Usage: sticky-rs --path <PATH>
+Usage: sticky-rs.sh --path <PATH>
 
 Options:
   -p, --path <PATH>  Path of image to open
@@ -37,7 +52,7 @@ This software can be used with `gnome-screenshot` to achieve the effect of Snipa
 mkdir -p /tmp/screenshot-sticky
 time=$(date "+%Y%m%d-%H-%M-%S")
 tmp_file="/tmp/screenshot-sticky/${time}.png"
-gnome-screenshot -c -a -f $tmp_file && /absolute-path/to/sticky-rs_x.x.x_amd64.AppImage -p "$tmp_file"
+gnome-screenshot -c -a -f $tmp_file && /usr/bin/sticky-rs.sh -p "$tmp_file"
 ```
 You can set a shortcut key through the system's built-in shortcut key function, bind your favorite shortcut key to this script, and you can take screenshots and paste pictures with one click.
 

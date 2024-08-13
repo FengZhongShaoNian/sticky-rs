@@ -18,10 +18,25 @@
 下面是软件界面的截图：
 ![UI截图](https://raw.gitmirror.com/FengZhongShaoNian/sticky-rs/master/screenshot/ui.png)
 
+## 编译
+
+```shell
+cd sticky-rs
+pnpm install
+pnpm run tauri build
+```
+
+## 安装
+
+对于使用archlinux AUR 的用户:
+```shell
+yay -S sticky-rs-git
+```
+
 ## 用法
 
 ```shell
-Usage: sticky-rs --path <PATH>
+Usage: sticky-rs.sh --path <PATH>
 
 Options:
   -p, --path <PATH>  Path of image to open
@@ -36,7 +51,7 @@ Options:
 mkdir -p /tmp/screenshot-sticky
 time=$(date "+%Y%m%d-%H-%M-%S")
 tmp_file="/tmp/screenshot-sticky/${time}.png"
-gnome-screenshot -c -a -f $tmp_file && /absolute-path/to/sticky-rs_x.x.x_amd64.AppImage -p "$tmp_file"
+gnome-screenshot -c -a -f $tmp_file && /usr/bin/sticky-rs.sh -p "$tmp_file"
 ```
 
 可以通过系统自带的快捷键功能设置一个快捷键，将自己喜欢的快捷键绑定到这个脚本，就可以实现一键截图并贴图了。
