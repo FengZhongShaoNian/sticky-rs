@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories={{{categories}}}
+Comment={{{comment}}}
+Exec={{{exec}}} %f
+Icon={{{icon}}}
+Name={{{name}}}
+Terminal=false
+Type=Application
+MimeType=image/jpeg;image/png;image/bmp;image/x-portable-bitmap;image/x-portable-pixmap;image/tiff;image/x-webp;image/webp;
