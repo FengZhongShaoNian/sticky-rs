@@ -48,7 +48,10 @@
         "icons/icon.ico"
       ],
       "deb": {
-        "desktopTemplate": "./template/sticky-rs.desktop"
+        "desktopTemplate": "./template/sticky-rs.desktop",
+        "files": {
+          "/usr/bin/sticky-rs.sh": "./template/sticky-rs.sh"
+        }
       },
       "category": "Utility"
     },

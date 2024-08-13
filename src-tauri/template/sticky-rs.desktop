@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories={{{categories}}}
 Comment={{{comment}}}
-Exec=GDK_BACKEND=x11 {{{exec}}} -p %f
+Exec=sticky-rs.sh -p %f
 Icon={{{icon}}}
 Name={{{name}}}
 Terminal=false
