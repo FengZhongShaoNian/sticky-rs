@@ -1,7 +1,7 @@
 use base64::prelude::*;
 use base64::prelude::BASE64_STANDARD;
 use image::{ImageError, ImageResult};
-use image::io::Reader as ImageReader;
+use image::ImageReader;
 
 /// DataURL string
 pub type DataURL = String;
