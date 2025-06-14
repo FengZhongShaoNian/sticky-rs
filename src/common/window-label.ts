@@ -1,4 +1,5 @@
-import {appWindow} from "@tauri-apps/api/window";
+import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
+const appWindow = getCurrentWebviewWindow()
 
 // 窗口命名规则：
 // 1. 主窗口的label的命名规则是：`^main-[0-9]+$`

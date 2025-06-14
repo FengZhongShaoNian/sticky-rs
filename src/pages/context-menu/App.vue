@@ -3,8 +3,9 @@
 // Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
 
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
-import {appWindow} from "@tauri-apps/api/window";
+import {getCurrentWebviewWindow} from "@tauri-apps/api/webviewWindow";
 import {i18n} from '../../common/translation.ts';
+const appWindow = getCurrentWebviewWindow()
 
 const isDevEnvironment = import.meta.env.MODE === 'development';
 

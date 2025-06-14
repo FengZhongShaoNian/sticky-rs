@@ -1,0 +1,16 @@
+{
+  "identifier": "migrated",
+  "description": "permissions that were migrated from v1",
+  "local": true,
+  "windows": [
+    "main-*"
+  ],
+  "permissions": [
+    "core:default",
+    "log:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-hide",
+    "core:window:allow-set-position",
+    "core:webview:allow-create-webview"
+  ]
+}

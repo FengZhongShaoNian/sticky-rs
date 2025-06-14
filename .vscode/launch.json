@@ -17,7 +17,11 @@
       },
       "args": ["--path=./screenshot/picture.png"],
       // task for the `beforeDevCommand` if used, must be configured in `.vscode/tasks.json`
-      "preLaunchTask": "ui:dev"
+      "preLaunchTask": "ui:dev",
+      "env": {
+        // 启用webkit的远程调试（好像无效，未找到解决办法）
+        "WEBKIT_INSPECTOR_SERVER": "127.0.0.1:9222"
+      }
     },
     {
       "type": "lldb",
@@ -28,6 +32,21 @@
       },
       // task for the `beforeBuildCommand` if used, must be configured in `.vscode/tasks.json`
       "preLaunchTask": "ui:build"
+    },
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to tauri webview",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true
+    }
+  ],
+  // 同时调试前端和rust后端
+  "compounds": [
+    {
+      "name": "Compound",
+      "configurations": ["Tauri Development Debug", "Attach to tauri webview"]
     }
   ]
 }

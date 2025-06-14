@@ -1,5 +1,5 @@
 import {getMainWindowLabel} from "./window-label.ts";
-import {WebviewWindow} from "@tauri-apps/api/window";
+import {WebviewWindow} from "@tauri-apps/api/webviewWindow";
 import logger from "./logger.ts";
 
 export enum CustomEvent {

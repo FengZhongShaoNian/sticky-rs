@@ -22,7 +22,7 @@ import iconDialogOK from "../../assets/icons/dialog-ok.svg?url";
 import SvgButton from "../../components/SvgButton.vue";
 import {onMounted, reactive} from "vue";
 import {getMainWindowLabel} from "../../common/window-label.ts";
-import {WebviewWindow} from "@tauri-apps/api/window";
+import {WebviewWindow} from "@tauri-apps/api/webviewWindow";
 import {CustomEvent, sendEventToMainWindow} from "../../common/custom-event.ts";
 import {ToolName} from "../../common/tool-name.ts";
 
