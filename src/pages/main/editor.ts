@@ -227,13 +227,13 @@ class CanvasRenderer implements Renderer {
 
     zoom(type: ZoomType): ZoomResult {
         const step = 0.1;
-        let newScalingRationForGraph;
+        let newScalingRatioForGraph;
         if (type === ZoomType.IN) {
             this.scalingRatio += step;
-            newScalingRationForGraph = this.scalingRatio / (this.scalingRatio - step);
+            newScalingRatioForGraph = this.scalingRatio / (this.scalingRatio - step);
         } else {
             this.scalingRatio -= step;
-            newScalingRationForGraph = this.scalingRatio / (this.scalingRatio + step);
+            newScalingRatioForGraph = this.scalingRatio / (this.scalingRatio + step);
         }
         console.log(`画布即将缩放到${this.scalingRatio * 100}%`);
 
@@ -242,9 +242,9 @@ class CanvasRenderer implements Renderer {
 
         this.resizeAllCanvas(newWidth, newHeight);
 
-        this.backgroundImageGraph.scale(newScalingRationForGraph);
+        this.backgroundImageGraph.scale(newScalingRatioForGraph);
         for (let graph of this.annotationContainer) {
-            graph.scale(newScalingRationForGraph);
+            graph.scale(newScalingRatioForGraph);
         }
 
         // 按 devicePixelRatio 缩放所有绘图操作
