@@ -1,9 +1,10 @@
 {
   "contextMenu": {
-    "showOrHideToolbar": "显示/隐藏工具条",
+    "showToolbar": "显示工具条",
     "copyToClipboard": "复制到剪切板",
     "exportToFile": "导出到文件",
     "closeWindow": "关闭窗口",
+    "hideTaskbarIcon": "隐藏任务栏图标",
     "openDevTools": "打开开发者工具"
   },
   "toolbar": {

@@ -7,10 +7,9 @@ use std::path::Path;
 use clap::Parser;
 use tauri::menu::MenuBuilder;
 use tauri::tray::TrayIconBuilder;
-use tauri_plugin_log::{Target, TargetKind};
 
 use crate::image_io::{read_image, write_image};
-use crate::window::{create_main_window, set_fixed_size};
+use crate::window::{create_main_window, open_devtools, set_fixed_size};
 
 mod events;
 mod image_io;
@@ -40,6 +39,7 @@ fn get_image_path_from_cmd_args(args: Args) -> String {
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             info!("{}, {argv:?}, {cwd}", app.package_info().name);
@@ -47,16 +47,8 @@ fn main() {
             let image_path = get_image_path_from_cmd_args(args);
             create_main_window(app, image_path);
         }))
-        .plugin(
-            tauri_plugin_log::Builder::default()
-                .targets([
-                    Target::new(TargetKind::Stdout),
-                    Target::new(TargetKind::Webview),
-                ])
-                .build(),
-        )
-        .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let args = Args::parse();
             let image_path = get_image_path_from_cmd_args(args);
@@ -77,6 +69,7 @@ fn main() {
         })
         .invoke_handler(tauri::generate_handler![
             set_fixed_size,
+            open_devtools,
             read_image,
             write_image
         ])

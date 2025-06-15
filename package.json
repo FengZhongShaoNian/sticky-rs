@@ -14,12 +14,12 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^2.5.0",
+    "@tauri-apps/plugin-clipboard-manager": "~2",
     "@tauri-apps/plugin-dialog": "^2.2.2",
     "@tauri-apps/plugin-log": "~2.4.0",
     "@tauri-apps/plugin-notification": "^2.2.2",
     "i18next": "^23.11.5",
     "stackblur-canvas": "^2.7.0",
-    "tauri-plugin-clipboard-api": "^0.6.10",
     "vue": "^3.3.4"
   },
   "devDependencies": {

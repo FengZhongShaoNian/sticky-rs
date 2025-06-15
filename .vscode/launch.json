@@ -19,6 +19,12 @@
       // task for the `beforeDevCommand` if used, must be configured in `.vscode/tasks.json`
       "preLaunchTask": "ui:dev",
       "env": {
+        // 使用wayland
+        //"GDK_BACKEND": "wayland",
+        
+        // 使用x11
+        "GDK_BACKEND": "x11",
+
         // 启用webkit的远程调试（好像无效，未找到解决办法）
         "WEBKIT_INSPECTOR_SERVER": "127.0.0.1:9222"
       }

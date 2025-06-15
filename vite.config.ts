@@ -13,7 +13,6 @@ export default defineConfig(async () => ({
       input: {
         index: path.resolve(__dirname, 'main.html'),
         toolbar: path.resolve(__dirname, 'toolbar.html'),
-        'context-menu': path.resolve(__dirname, 'context-menu.html'),
       }
     }
   },

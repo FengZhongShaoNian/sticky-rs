@@ -8,9 +8,32 @@
   "permissions": [
     "core:default",
     "log:default",
+    "core:window:default",
     "core:window:allow-start-dragging",
+    "core:window:allow-create",
+    "core:window:allow-show",
     "core:window:allow-hide",
     "core:window:allow-set-position",
-    "core:webview:allow-create-webview"
+    "core:window:allow-inner-position",
+    "core:window:allow-outer-position",
+    "core:window:allow-scale-factor",
+    "core:window:allow-set-always-on-top",
+    "core:window:allow-set-size",
+    "core:window:allow-set-skip-taskbar",
+    "core:window:allow-center",
+    "core:window:allow-close",
+    "core:webview:allow-create-webview",
+    "core:webview:allow-internal-toggle-devtools",
+    "clipboard-manager:default",
+    "clipboard-manager:allow-write-image",
+    "notification:default",
+    "notification:allow-is-permission-granted",
+    "notification:allow-check-permissions",
+    "notification:allow-permission-state",
+    "notification:allow-notify",
+    "notification:allow-show",
+    "notification:allow-request-permission",
+    "dialog:default",
+    "dialog:allow-save"
   ]
 }

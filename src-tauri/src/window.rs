@@ -3,18 +3,23 @@ use crate::events::OpenImageEventPayload;
 use crate::image_io::get_image_size;
 use log::info;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use tauri::{AppHandle, Emitter, Listener, LogicalSize, PhysicalSize, Window};
+use tauri::{AppHandle, Emitter, Listener, LogicalSize, PhysicalSize, WebviewWindow};
 
 // A window counter whose value increments by 1 each time a window is created
 static MAIN_WINDOW_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
-pub fn set_fixed_size(window: tauri::Window, logical_size: LogicalSize<f64>) {
+pub fn set_fixed_size(window: WebviewWindow, logical_size: LogicalSize<f64>) {
     set_fixed_size_with_ref(&window, logical_size);
 }
 
-fn set_fixed_size_with_ref(window: &Window, logical_size: LogicalSize<f64>) {
+#[tauri::command]
+pub fn open_devtools(window: WebviewWindow) {
+    window.open_devtools();
+}
+
+fn set_fixed_size_with_ref(window: &WebviewWindow, logical_size: LogicalSize<f64>) {
     window.set_size(logical_size).unwrap();
     // 由于通过resizeable=false来限制窗口的大小存在bug（https://github.com/tauri-apps/tao/issues/561）
     // 所以这里通过设置最大尺寸和最小尺寸来避免调整窗口大小
@@ -53,6 +58,7 @@ fn create_main_window_with_initial_window_size(
     .skip_taskbar(true)
     .visible(false)
     .resizable(false)
+    .devtools(true)
     .center()
     .build()
     .unwrap();
@@ -73,7 +79,8 @@ fn create_main_window_with_initial_window_size(
             info!("[{window_label}] receive page-loaded event");
 
             main_window
-                .emit(
+                .emit_to(
+                    window_label.clone(),
                     "open-image",
                     OpenImageEventPayload {
                         send_to: window_label.clone(),

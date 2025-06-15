@@ -1,19 +1,20 @@
-import {AbstractAnnotationTool} from "./tools/abstract-annotation-tool.ts";
-import {EllipseTool} from "./tools/ellipse-tool.ts";
-import {GraphContainer, Graph, Renderer, TypedObservable} from "./graphs/graph.ts";
-import {Image} from "./graphs/image.ts";
-import {RectangleTool} from "./tools/rectangle-tool.ts";
-import {StraightLineTool} from "./tools/straight-line-tool.ts";
-import {FreeCurveTool} from "./tools/free-curve-tool.ts";
-import {MarkerPenTool} from "./tools/marker-pen-tool.ts";
-import {NumberTool} from "./tools/number-tool.ts";
-import {ArrowTool} from "./tools/arrow-tool.ts";
-import {EraserTool} from "./tools/eraser-tool.ts";
-import {MosaicTool} from "./tools/mosaic-tool.ts";
-import {GaussianBlurTool} from "./tools/gaussian-blur-tool.ts";
-import {TextTool} from "./tools/text-tool.ts";
+import { AbstractAnnotationTool } from "./tools/abstract-annotation-tool.ts";
+import { EllipseTool } from "./tools/ellipse-tool.ts";
+import { GraphContainer, Graph, Renderer, TypedObservable } from "./graphs/graph.ts";
+import { Image } from "./graphs/image.ts";
+import { RectangleTool } from "./tools/rectangle-tool.ts";
+import { StraightLineTool } from "./tools/straight-line-tool.ts";
+import { FreeCurveTool } from "./tools/free-curve-tool.ts";
+import { MarkerPenTool } from "./tools/marker-pen-tool.ts";
+import { NumberTool } from "./tools/number-tool.ts";
+import { ArrowTool } from "./tools/arrow-tool.ts";
+import { EraserTool } from "./tools/eraser-tool.ts";
+import { MosaicTool } from "./tools/mosaic-tool.ts";
+import { GaussianBlurTool } from "./tools/gaussian-blur-tool.ts";
+import { TextTool } from "./tools/text-tool.ts";
+import { resolve } from "path";
 
-function getDragRegion(){
+function getDragRegion() {
     const element = document.getElementById('drag-region');
     if (element == null) {
         throw new Error('HTMLElement whose id="drag-region" not found');
@@ -43,17 +44,17 @@ function getCanvas(canvasId: string) {
 }
 
 let zoomTipsTimeout: NodeJS.Timeout | null = null;
-function showZoomTips(tips: string, duration: number){
+function showZoomTips(tips: string, duration: number) {
     let element = document.getElementById("zoom-tip");
-    if(element == null){
+    if (element == null) {
         throw new Error('HTMLElement whose id="zoom-tip" not found');
     }
     element.innerText = tips;
-    element.style.display='block';
-    if(zoomTipsTimeout){
+    element.style.display = 'block';
+    if (zoomTipsTimeout) {
         clearTimeout(zoomTipsTimeout);
     }
-    zoomTipsTimeout = setTimeout(()=>{
+    zoomTipsTimeout = setTimeout(() => {
         element.removeAttribute('style');
     }, duration);
 }
@@ -95,19 +96,19 @@ class CanvasRenderer implements Renderer {
     // 缩放比例
     private scalingRatio: number;
 
-    requireContext(canvas: HTMLCanvasElement){
+    requireContext(canvas: HTMLCanvasElement) {
         const ctx = canvas.getContext("2d");
-        if(ctx == null){
+        if (ctx == null) {
             throw new Error('Failed to get context2d from canvas');
         }
         return ctx;
     }
 
     constructor(backgroundCanvas: HTMLCanvasElement,
-                annotationCanvas: HTMLCanvasElement,
-                mergeCanvas: HTMLCanvasElement,
-                background: HTMLImageElement,
-                annotationContainer: GraphContainer) {
+        annotationCanvas: HTMLCanvasElement,
+        mergeCanvas: HTMLCanvasElement,
+        background: HTMLImageElement,
+        annotationContainer: GraphContainer) {
         this.backgroundCanvas = backgroundCanvas;
         this.annotationCanvas = annotationCanvas;
         this.mergeCanvas = mergeCanvas;
@@ -159,15 +160,15 @@ class CanvasRenderer implements Renderer {
         this.renderAnnotations();
     }
 
-    renderBackground(){
+    renderBackground() {
         this.backgroundCtx.clearRect(0, 0, this.backgroundCanvas.width, this.backgroundCanvas.height);
         this.backgroundImageGraph.render(this.backgroundCtx);
     }
 
-    renderAnnotations(force?: boolean){
+    renderAnnotations(force?: boolean) {
         this.annotationCtx.clearRect(0, 0, this.annotationCanvas.width, this.annotationCanvas.height);
         for (let graph of this.annotationContainer) {
-            if(graph.backgroundImageAware){
+            if (graph.backgroundImageAware) {
                 const getImageData = (x: number, y: number, width: number, height: number) => {
                     console.log(`试图提取(x: ${x}, y: ${y}, width: ${width}, height: ${height})的背景图像`);
                     const devicePixelRatio = window.devicePixelRatio || 1;
@@ -178,18 +179,18 @@ class CanvasRenderer implements Renderer {
                     console.log(`根据设备像素比进行换算后，提取(x: ${scaledX}, y: ${scaledY}, width: ${scaledWidth}, height: ${scaledHeight})的背景图像`);
                     return this.backgroundCtx.getImageData(scaledX, scaledY, scaledWidth, scaledHeight);
                 }
-                graph.backgroundImageAware({getImageData: getImageData});
+                graph.backgroundImageAware({ getImageData: getImageData });
             }
             graph.render(this.annotationCtx, force);
         }
     }
 
-    renderAll(force?: boolean){
+    renderAll(force?: boolean) {
         this.renderBackground();
         this.renderAnnotations(force);
     }
 
-    exportImageToDataURL(type?: string | undefined, quality?: any){
+    exportImageToDataURL(type?: string | undefined, quality?: any) {
         this.renderAll(true);
 
         const rect = this.mergeCanvas.getBoundingClientRect();
@@ -200,17 +201,37 @@ class CanvasRenderer implements Renderer {
         return this.mergeCanvas.toDataURL(type, quality);
     }
 
-    update(_observable: TypedObservable): void {
-       this.renderAnnotations();
+    async exportImage(type?: string | undefined, quality?: any): Promise<Blob> {
+        this.renderAll(true);
+
+        const rect = this.mergeCanvas.getBoundingClientRect();
+        this.mergeCtx.clearRect(0, 0, this.mergeCanvas.width, this.mergeCanvas.height);
+        this.mergeCtx.drawImage(this.backgroundCanvas, 0, 0, rect.width, rect.height);
+        this.mergeCtx.drawImage(this.annotationCanvas, 0, 0, rect.width, rect.height);
+
+        return new Promise((resolve, reject) => {
+            this.mergeCanvas.toBlob((blob) => {
+                if(blob){
+                    resolve(blob);
+                }else{
+                    reject(new Error('将画布中的图片转成Blob失败'));
+                }
+            }, type, quality);
+        })
+
     }
 
-    zoom(type: ZoomType): ZoomResult{
+    update(_observable: TypedObservable): void {
+        this.renderAnnotations();
+    }
+
+    zoom(type: ZoomType): ZoomResult {
         const step = 0.1;
         let newScalingRationForGraph;
-        if(type === ZoomType.IN){
+        if (type === ZoomType.IN) {
             this.scalingRatio += step;
-            newScalingRationForGraph =  this.scalingRatio / (this.scalingRatio - step);
-        }else {
+            newScalingRationForGraph = this.scalingRatio / (this.scalingRatio - step);
+        } else {
             this.scalingRatio -= step;
             newScalingRationForGraph = this.scalingRatio / (this.scalingRatio + step);
         }
@@ -232,7 +253,7 @@ class CanvasRenderer implements Renderer {
         // 重新渲染
         this.renderAll();
 
-        showZoomTips(`${(this.scalingRatio*100).toFixed(0)}%`, 1000);
+        showZoomTips(`${(this.scalingRatio * 100).toFixed(0)}%`, 1000);
 
         return {
             width: newWidth,
@@ -246,13 +267,13 @@ class CanvasRenderer implements Renderer {
      * @param newWidth 画布的物理尺寸（画布的CSS尺寸）
      * @param newHeight 画布的物理尺寸（画布的CSS尺寸）
      */
-    private resizeAllCanvas(newWidth: number, newHeight: number){
+    private resizeAllCanvas(newWidth: number, newHeight: number) {
         this.resizeCanvas(this.backgroundCanvas, newWidth, newHeight);
         this.resizeCanvas(this.annotationCanvas, newWidth, newHeight);
         this.resizeCanvas(this.mergeCanvas, newWidth, newHeight);
     }
 
-    private resizeCanvas(canvas: HTMLCanvasElement, newWidth: number, newHeight: number){
+    private resizeCanvas(canvas: HTMLCanvasElement, newWidth: number, newHeight: number) {
         console.log(`开始调整画布${canvas.id}的大小`)
         // 获取设备像素比
         const devicePixelRatio = window.devicePixelRatio || 1;
@@ -315,8 +336,8 @@ export class Editor {
         this.renderer.renderBackground();
 
         getDragRegion().addEventListener('wheel', (event) => {
-            if(!this.editing && this.renderer){
-                const zoomType = (event.deltaY < 0)? ZoomType.IN : ZoomType.OUT;
+            if (!this.editing && this.renderer) {
+                const zoomType = (event.deltaY < 0) ? ZoomType.IN : ZoomType.OUT;
                 const result = this.renderer.zoom(zoomType);
                 console.log('zoomResult:', result);
                 this.zoomEventListeners.forEach(callback => callback(result));
@@ -324,28 +345,40 @@ export class Editor {
         });
     }
 
-    exportPngImage(){
+    exportPngImageToDataURL() {
         return this.renderer?.exportImageToDataURL('image/png', 1);
+    }
+
+    async exportPngImage(): Promise<Blob> {
+        return new Promise((resolve, reject)=>{
+            if(!this.renderer){
+                reject(new Error('rederer is undefined'));
+            }else{
+                this.renderer.exportImage('image/png', 1)
+                .then(resolve)
+                .catch(reject);
+            }
+        });
     }
 
     isEditing(): boolean {
         return this.editing;
     }
 
-    registerAnnotationTool(tool: AbstractAnnotationTool){
+    registerAnnotationTool(tool: AbstractAnnotationTool) {
         const toolName = tool.name();
-        if(this.annotationTools.has(toolName)){
+        if (this.annotationTools.has(toolName)) {
             throw new Error(`A tool with the same name "${toolName}" already exists`)
         }
         this.annotationTools.set(tool.name(), tool);
     }
 
-    activeTool(toolName: string){
+    activeTool(toolName: string) {
         let tool = this.annotationTools.get(toolName);
-        if(!tool){
+        if (!tool) {
             throw new Error(`A tool with name "${toolName}" not found`)
         }
-        if(this.currentActiveAnnotationTool){
+        if (this.currentActiveAnnotationTool) {
             this.currentActiveAnnotationTool.deactive();
         }
         this.currentActiveAnnotationTool = tool;
@@ -354,8 +387,8 @@ export class Editor {
         disableDragRegion();
     }
 
-    exitEditMode(){
-        if(this.currentActiveAnnotationTool){
+    exitEditMode() {
+        if (this.currentActiveAnnotationTool) {
             this.currentActiveAnnotationTool.deactive();
             this.currentActiveAnnotationTool = undefined;
         }

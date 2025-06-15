@@ -29,7 +29,6 @@ import {ToolName} from "../../common/tool-name.ts";
 import {i18n} from "../../common/translation.ts"
 
 const mainWindowLabel = getMainWindowLabel();
-const mainWindow = WebviewWindow.getByLabel(mainWindowLabel);
 
 const buttons = reactive([
   {toolName: ToolName.RECTANGLE_TOOL, checkable: true, checked: false, title: i18n.t('toolbar.rectangleTool'), icon: iconDrawRectangle},

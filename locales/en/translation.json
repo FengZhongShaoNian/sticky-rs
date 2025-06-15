@@ -1,9 +1,10 @@
 {
   "contextMenu": {
-    "showOrHideToolbar": "Show/Hide Toolbar",
+    "showToolbar": "Show Toolbar",
     "copyToClipboard": "Copy To Clipboard",
     "exportToFile": "Export To File",
     "closeWindow": "Close Window",
+    "hideTaskbarIcon": "Hide TaskbarIcon",
     "openDevTools": "Open Dev Tool"
   },
   "toolbar": {
