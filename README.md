@@ -32,6 +32,9 @@ pnpm run tauri build
 For archlinux AUR users:
 ```shell
 yay -S sticky-rs-git
+
+#or:
+yay -S sticky-rs-bin
 ```
 
 ## Usage

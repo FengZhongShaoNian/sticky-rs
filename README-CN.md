@@ -31,6 +31,9 @@ pnpm run tauri build
 对于使用archlinux AUR 的用户:
 ```shell
 yay -S sticky-rs-git
+
+# 或者使用如下的预构建好的包：
+yay -S sticky-rs-bin
 ```
 
 ## 用法
