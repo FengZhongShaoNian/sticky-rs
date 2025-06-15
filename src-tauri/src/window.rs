@@ -60,7 +60,8 @@ fn create_main_window_with_initial_window_size(
     .always_on_top(true)
     .skip_taskbar(true)
     .visible(false)
-    .resizable(false)
+    // resizable设置为false会存在bug，改为用set_fixed_size_with_ref代替
+    //.resizable(false) 
     .devtools(true)
     .center()
     .build()
@@ -68,7 +69,7 @@ fn create_main_window_with_initial_window_size(
 
     let scale_factor = main_window.scale_factor().unwrap();
     let logical_size: LogicalSize<f64> = initial_window_size.to_logical(scale_factor);
-    main_window.set_size(logical_size).unwrap();
+    set_fixed_size_with_ref(&main_window, logical_size);
     main_window.show().unwrap();
 
     // Set up a listener to receive events from the front-end,
