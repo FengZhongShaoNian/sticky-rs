@@ -238,7 +238,7 @@ async function handleCustomContextMenuEvents() {
         if (currentWebviewWindowSkipTaskbar) {
             currentWebviewWindow.setSkipTaskbar(false);
             currentWebviewWindowSkipTaskbar = false;
-        }else {
+        } else {
             currentWebviewWindow.setSkipTaskbar(true);
             currentWebviewWindowSkipTaskbar = true;
         }
@@ -359,6 +359,13 @@ interface OpenImageEventPayload {
     image_path: string,
 }
 
+function doSomeTranslate() {
+    const dragRegion = document.getElementById('drag-region');
+    if (dragRegion) {
+        dragRegion.title = i18n.t('html.dragRegionTitle');
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
     await logger.info('DOMContentLoaded').catch(console.error);
 
@@ -377,6 +384,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             await logger.error(`Failed to showToolbarWindow, ${JSON.stringify(e)}`);
         }
 
+        doSomeTranslate();
     });
 
     // 页面DOM加载完成

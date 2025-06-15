@@ -35,5 +35,8 @@
   },
   "graph": {
     "textEditorMovementTips": "Hold down the Alt key and move the mouse to change the position of the text box"
+  },
+  "html": {
+    "dragRegionTitle": "You can scroll the mouse to zoom in and out. Double click on the window to close it"
   }
 }

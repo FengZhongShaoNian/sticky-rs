@@ -25,6 +25,9 @@
         // 使用x11
         "GDK_BACKEND": "x11",
 
+        // 设置中文语言环境
+        "LANG": "zh_CN.UTF-8",
+
         // 启用webkit的远程调试（好像无效，未找到解决办法）
         "WEBKIT_INSPECTOR_SERVER": "127.0.0.1:9222"
       }

@@ -35,5 +35,8 @@
   },
   "graph": {
     "textEditorMovementTips": "按住Alt键移动鼠标可以更改文本框的位置"
+  },
+  "html": {
+    "dragRegionTitle": "您可以通过鼠标滚轮对图片进行缩放。通过双击窗口可以关闭此窗口"
   }
 }
