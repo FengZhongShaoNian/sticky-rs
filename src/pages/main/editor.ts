@@ -12,7 +12,6 @@ import { EraserTool } from "./tools/eraser-tool.ts";
 import { MosaicTool } from "./tools/mosaic-tool.ts";
 import { GaussianBlurTool } from "./tools/gaussian-blur-tool.ts";
 import { TextTool } from "./tools/text-tool.ts";
-import { resolve } from "path";
 
 function getDragRegion() {
     const element = document.getElementById('drag-region');
@@ -93,6 +92,9 @@ class CanvasRenderer implements Renderer {
     private readonly backgroundImageHeight: number;
     private readonly backgroundImageGraph: Image;
 
+    // 系统窗口的缩放因子
+    private readonly scaleFactor: number;
+
     // 缩放比例
     private scalingRatio: number;
 
@@ -108,7 +110,8 @@ class CanvasRenderer implements Renderer {
         annotationCanvas: HTMLCanvasElement,
         mergeCanvas: HTMLCanvasElement,
         background: HTMLImageElement,
-        annotationContainer: GraphContainer) {
+        annotationContainer: GraphContainer,
+        scaleFactor: number) {
         this.backgroundCanvas = backgroundCanvas;
         this.annotationCanvas = annotationCanvas;
         this.mergeCanvas = mergeCanvas;
@@ -121,22 +124,21 @@ class CanvasRenderer implements Renderer {
         this.annotationContainer = annotationContainer;
         this.annotationContainer.addObserver(this);
 
-        // 获取设备像素比
-        const devicePixelRatio = window.devicePixelRatio || 1;
+        this.scaleFactor = scaleFactor;
 
         // 在高分辨率的屏幕上，缩小图片尺寸以避免图片模糊
-        this.backgroundImageWidth = background.width / devicePixelRatio;
-        this.backgroundImageHeight = background.height / devicePixelRatio;
+        this.backgroundImageWidth = background.width / this.scaleFactor;
+        this.backgroundImageHeight = background.height / this.scaleFactor;
 
-        console.log(`按照设备像素比进行调整后，图片的宽度是：${this.backgroundImageWidth}，图片的高度是：${this.backgroundImageHeight}`);
+        console.log(`按照scaleFactor进行调整后，图片的宽度是：${this.backgroundImageWidth}，图片的高度是：${this.backgroundImageHeight}`);
 
         this.scalingRatio = 1; // 无缩放
 
         // 调整画布尺寸
         this.resizeAllCanvas(this.backgroundImageWidth, this.backgroundImageHeight);
 
-        // 按 devicePixelRatio 缩放所有绘图操作
-        this.scaleAllContextsWithDevicePixelRatio(devicePixelRatio);
+        // 按 scaleFactor 缩放所有绘图操作
+        this.scaleAllContextsWithScaleFactor(this.scaleFactor);
 
         // 获取画布的大小（以 CSS 像素为单位）。
         const rect = this.backgroundCanvas.getBoundingClientRect();
@@ -149,10 +151,10 @@ class CanvasRenderer implements Renderer {
         });
     }
 
-    private scaleAllContextsWithDevicePixelRatio(devicePixelRatio: number) {
-        this.backgroundCtx.scale(devicePixelRatio, devicePixelRatio);
-        this.annotationCtx.scale(devicePixelRatio, devicePixelRatio);
-        this.mergeCtx.scale(devicePixelRatio, devicePixelRatio);
+    private scaleAllContextsWithScaleFactor(scaleFactor: number) {
+        this.backgroundCtx.scale(scaleFactor, scaleFactor);
+        this.annotationCtx.scale(scaleFactor, scaleFactor);
+        this.mergeCtx.scale(scaleFactor, scaleFactor);
     }
 
     render(graph: Graph): void {
@@ -171,12 +173,11 @@ class CanvasRenderer implements Renderer {
             if (graph.backgroundImageAware) {
                 const getImageData = (x: number, y: number, width: number, height: number) => {
                     console.log(`试图提取(x: ${x}, y: ${y}, width: ${width}, height: ${height})的背景图像`);
-                    const devicePixelRatio = window.devicePixelRatio || 1;
-                    const scaledX = x * devicePixelRatio;
-                    const scaledY = y * devicePixelRatio;
-                    const scaledWidth = width * devicePixelRatio;
-                    const scaledHeight = height * devicePixelRatio;
-                    console.log(`根据设备像素比进行换算后，提取(x: ${scaledX}, y: ${scaledY}, width: ${scaledWidth}, height: ${scaledHeight})的背景图像`);
+                    const scaledX = x * this.scaleFactor;
+                    const scaledY = y * this.scaleFactor;
+                    const scaledWidth = width * this.scaleFactor;
+                    const scaledHeight = height * this.scaleFactor;
+                    console.log(`根据scaleFactor进行换算后，提取(x: ${scaledX}, y: ${scaledY}, width: ${scaledWidth}, height: ${scaledHeight})的背景图像`);
                     return this.backgroundCtx.getImageData(scaledX, scaledY, scaledWidth, scaledHeight);
                 }
                 graph.backgroundImageAware({ getImageData: getImageData });
@@ -247,8 +248,8 @@ class CanvasRenderer implements Renderer {
             graph.scale(newScalingRatioForGraph);
         }
 
-        // 按 devicePixelRatio 缩放所有绘图操作
-        this.scaleAllContextsWithDevicePixelRatio(devicePixelRatio);
+        // 按 scaleFactor 缩放所有绘图操作
+        this.scaleAllContextsWithScaleFactor(this.scaleFactor);
 
         // 重新渲染
         this.renderAll();
@@ -275,14 +276,12 @@ class CanvasRenderer implements Renderer {
 
     private resizeCanvas(canvas: HTMLCanvasElement, newWidth: number, newHeight: number) {
         console.log(`开始调整画布${canvas.id}的大小`)
-        // 获取设备像素比
-        const devicePixelRatio = window.devicePixelRatio || 1;
 
-        console.log('设备的像素比：%d', devicePixelRatio);
+        console.log(`设备的scaleFactor：${this.scaleFactor}`);
 
         // canvas.width和canvas.height设置的是Canvas元素的内部渲染缓冲区的逻辑像素尺寸
-        canvas.width = newWidth * devicePixelRatio;
-        canvas.height = newHeight * devicePixelRatio;
+        canvas.width = newWidth * this.scaleFactor;
+        canvas.height = newHeight * this.scaleFactor;
 
         console.log(`调整后画布的逻辑宽度：${canvas.width}，逻辑高度：${canvas.height}`);
 
@@ -315,7 +314,7 @@ export class Editor {
         this.zoomEventListeners = new Set<ZoomEventListener>();
     }
 
-    open(image: HTMLImageElement) {
+    open(image: HTMLImageElement, scaleFactor: number) {
         console.log('进入Editor.open方法, image:', image)
 
         this.annotationContainer = new GraphContainer();
@@ -332,7 +331,7 @@ export class Editor {
         this.registerAnnotationTool(new GaussianBlurTool(this.annotationContainer, this.annotationCanvas));
         this.registerAnnotationTool(new TextTool(this.annotationContainer, this.annotationCanvas));
 
-        this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer);
+        this.renderer = new CanvasRenderer(this.backgroundCanvas, this.annotationCanvas, this.mergeCanvas, image, this.annotationContainer, scaleFactor);
         this.renderer.renderBackground();
 
         getDragRegion().addEventListener('wheel', (event) => {

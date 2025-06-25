@@ -22,6 +22,7 @@ import { i18n } from "../../common/translation.ts"
 import { LogicalSize, PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { Webview } from '@tauri-apps/api/webview';
 import { writeImage } from '@tauri-apps/plugin-clipboard-manager';
+import {getScaleFactor} from "./scale-factor.ts";
 const currentWebviewWindow = getCurrentWebviewWindow()
 
 const isDevEnvironment = import.meta.env.MODE === 'development';
@@ -123,10 +124,12 @@ async function openImage(imagePath: string) {
         path: imagePath
     });
 
+    const scaleFactor = await getScaleFactor();
+
     const img = new Image();
     img.src = base64Image;
     img.onload = () => {
-        editor.open(img);
+        editor.open(img, scaleFactor);
     }
 }
 

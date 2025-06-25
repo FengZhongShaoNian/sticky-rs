@@ -22,6 +22,32 @@ pub fn open_devtools(_window: WebviewWindow) {
     }
 }
 
+// 获取窗口的缩放因子
+#[tauri::command]
+pub fn get_scale_factor(window: WebviewWindow) -> Result<f64, String> {
+    if let Ok(scale_factor_str) = std::env::var("STICKY_RS_SCALE_FACTOR") {
+        println!("env STICKY_RS_SCALE_FACTOR: {}", scale_factor_str);
+        match scale_factor_str.parse::<f64>() {
+            Ok(scale_factor) => {
+                Ok(scale_factor)
+            }
+            Err(_) => {
+                println!("STICKY_RS_SCALE_FACTOR error. Failed to parse {} to f64", scale_factor_str);
+                Err("STICKY_RS_SCALE_FACTOR error".to_string())
+            }
+        }
+    }else {
+        match window.scale_factor() {
+            Ok(scale_factor) => {
+                Ok(scale_factor)
+            }
+            Err(e) => {
+                Err(e.to_string())
+            }
+        }
+    }
+}
+
 fn set_fixed_size_with_ref(window: &WebviewWindow, logical_size: LogicalSize<f64>) {
     window.set_size(logical_size).unwrap();
     // 由于通过resizeable=false来限制窗口的大小存在bug（https://github.com/tauri-apps/tao/issues/561）
@@ -67,7 +93,7 @@ fn create_main_window_with_initial_window_size(
     .build()
     .unwrap();
 
-    let scale_factor = main_window.scale_factor().unwrap();
+    let scale_factor = get_scale_factor(main_window.clone()).unwrap();
     let logical_size: LogicalSize<f64> = initial_window_size.to_logical(scale_factor);
     set_fixed_size_with_ref(&main_window, logical_size);
     main_window.show().unwrap();

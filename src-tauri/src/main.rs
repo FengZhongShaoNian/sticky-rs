@@ -9,7 +9,7 @@ use tauri::menu::MenuBuilder;
 use tauri::tray::TrayIconBuilder;
 
 use crate::image_io::{read_image, write_image};
-use crate::window::{create_main_window, open_devtools, set_fixed_size};
+use crate::window::{create_main_window, open_devtools, set_fixed_size, get_scale_factor};
 
 mod events;
 mod image_io;
@@ -71,7 +71,8 @@ fn main() {
             set_fixed_size,
             open_devtools,
             read_image,
-            write_image
+            write_image,
+            get_scale_factor
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
