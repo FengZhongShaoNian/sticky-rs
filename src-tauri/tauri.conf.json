@@ -29,7 +29,7 @@
   },
   "productName": "sticky-rs",
   "mainBinaryName": "sticky-rs",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "identifier": "com.github.fengzhongshaonian.sticky-rs",
   "plugins": {},
   "app": {
