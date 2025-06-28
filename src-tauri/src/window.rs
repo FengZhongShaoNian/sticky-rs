@@ -90,6 +90,7 @@ fn create_main_window_with_initial_window_size(
     //.resizable(false) 
     .devtools(true)
     .center()
+    .window_classname("sticky-rs-main")
     .build()
     .unwrap();
 
