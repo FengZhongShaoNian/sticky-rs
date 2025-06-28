@@ -20,7 +20,6 @@ clap = { version = "4.5.4", features = ["derive"] }
 base64 = "0.22.1"
 image = "0.25.1"
 log = "^0.4"
-tauri-plugin-clipboard = "2.0.0"
 tauri-plugin-dialog = "2"
 tauri-plugin-notification = "2.2.2"
 tauri-plugin-clipboard-manager = "2"
