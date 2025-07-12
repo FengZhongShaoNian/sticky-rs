@@ -26,6 +26,7 @@
     "core:webview:allow-internal-toggle-devtools",
     "clipboard-manager:default",
     "clipboard-manager:allow-write-image",
+    "clipboard-manager:allow-read-image",
     "notification:default",
     "notification:allow-is-permission-granted",
     "notification:allow-check-permissions",

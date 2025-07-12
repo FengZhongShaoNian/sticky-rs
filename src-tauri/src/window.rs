@@ -1,9 +1,5 @@
-use crate::events;
-use crate::events::OpenImageEventPayload;
-use crate::image_io::get_image_size;
-use log::info;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use tauri::{AppHandle, Emitter, Listener, LogicalSize, PhysicalSize, WebviewWindow};
+use tauri::{AppHandle, LogicalSize, PhysicalSize, WebviewWindow};
 
 // A window counter whose value increments by 1 each time a window is created
 static MAIN_WINDOW_COUNTER: AtomicUsize = AtomicUsize::new(0);
@@ -28,22 +24,19 @@ pub fn get_scale_factor(window: WebviewWindow) -> Result<f64, String> {
     if let Ok(scale_factor_str) = std::env::var("STICKY_RS_SCALE_FACTOR") {
         println!("env STICKY_RS_SCALE_FACTOR: {}", scale_factor_str);
         match scale_factor_str.parse::<f64>() {
-            Ok(scale_factor) => {
-                Ok(scale_factor)
-            }
+            Ok(scale_factor) => Ok(scale_factor),
             Err(_) => {
-                println!("STICKY_RS_SCALE_FACTOR error. Failed to parse {} to f64", scale_factor_str);
+                println!(
+                    "STICKY_RS_SCALE_FACTOR error. Failed to parse {} to f64",
+                    scale_factor_str
+                );
                 Err("STICKY_RS_SCALE_FACTOR error".to_string())
             }
         }
-    }else {
+    } else {
         match window.scale_factor() {
-            Ok(scale_factor) => {
-                Ok(scale_factor)
-            }
-            Err(e) => {
-                Err(e.to_string())
-            }
+            Ok(scale_factor) => Ok(scale_factor),
+            Err(e) => Err(e.to_string()),
         }
     }
 }
@@ -56,22 +49,10 @@ fn set_fixed_size_with_ref(window: &WebviewWindow, logical_size: LogicalSize<f64
     window.set_max_size(Some(logical_size)).unwrap();
 }
 
-pub fn create_main_window(handle: &AppHandle, image_path: String) {
-    let image_size = get_image_size(&image_path)
-        .expect(&format!("Failed to get the size of image {}", image_path));
-
-    let initial_window_size: PhysicalSize<f64> = PhysicalSize {
-        width: image_size.width as f64,
-        height: image_size.height as f64,
-    };
-    create_main_window_with_initial_window_size(handle, image_path, initial_window_size)
-}
-
-fn create_main_window_with_initial_window_size(
+pub fn create_main_window(
     handle: &AppHandle,
-    image_path: String,
-    initial_window_size: PhysicalSize<f64>,
-) {
+    initial_window_size: PhysicalSize<u32>,
+) -> WebviewWindow {
     let window_label = format!(
         "main-{}",
         MAIN_WINDOW_COUNTER.fetch_add(1, Ordering::SeqCst)
@@ -87,7 +68,7 @@ fn create_main_window_with_initial_window_size(
     .skip_taskbar(true)
     .visible(false)
     // resizable设置为false会存在bug，改为用set_fixed_size_with_ref代替
-    //.resizable(false) 
+    //.resizable(false)
     .devtools(true)
     .center()
     .window_classname("sticky-rs-main")
@@ -99,26 +80,5 @@ fn create_main_window_with_initial_window_size(
     set_fixed_size_with_ref(&main_window, logical_size);
     main_window.show().unwrap();
 
-    // Set up a listener to receive events from the front-end,
-    // and upon completion of the front-end page loading, notify the window to open the specified image.
-    handle.listen_any("page-loaded", move |event| {
-        let payload = event.payload();
-
-        let page_loaded_event_payload: events::PageLoadedEventPayload =
-            serde_json::from_str(payload).unwrap();
-        if page_loaded_event_payload.send_from == window_label {
-            info!("[{window_label}] receive page-loaded event");
-
-            main_window
-                .emit_to(
-                    window_label.clone(),
-                    "open-image",
-                    OpenImageEventPayload {
-                        send_to: window_label.clone(),
-                        image_path: image_path.clone(),
-                    },
-                )
-                .unwrap();
-        }
-    });
+    main_window
 }

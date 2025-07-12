@@ -25,6 +25,9 @@
         // 使用x11
         "GDK_BACKEND": "x11",
 
+        // 指定分数缩放
+        //"STICKY_RS_SCALE_FACTOR": "1.25",
+
         // 设置中文语言环境
         "LANG": "zh_CN.UTF-8",
 

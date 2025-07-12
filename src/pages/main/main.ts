@@ -119,11 +119,7 @@ async function showToolbarWindow() {
     await toolbarWindow.show();
 }
 
-async function openImage(imagePath: string) {
-    const base64Image = await invoke<string>('read_image', {
-        path: imagePath
-    });
-
+async function openImage(base64Image: string) {
     const scaleFactor = await getScaleFactor();
 
     const img = new Image();
@@ -354,14 +350,6 @@ async function saveImageFile(base64EncodedImage: string) {
     return null;
 }
 
-interface OpenImageEventPayload {
-    // label of receiver window
-    send_to: string,
-
-    // path of image to open
-    image_path: string,
-}
-
 function doSomeTranslate() {
     const dragRegion = document.getElementById('drag-region');
     if (dragRegion) {
@@ -372,15 +360,10 @@ function doSomeTranslate() {
 document.addEventListener("DOMContentLoaded", async function () {
     await logger.info('DOMContentLoaded').catch(console.error);
 
-    await listen<OpenImageEventPayload>('open-image', async (event: Event<OpenImageEventPayload>) => {
-        const openImageEventPayload = event.payload;
-        if (openImageEventPayload.send_to != currentWebviewWindow.label) {
-            return;
-        }
-        const imagePath = openImageEventPayload.image_path;
-        await logger.info('received imagePath: ' + imagePath);
-
-        await openImage(imagePath);
+    await listen<string>('open-image', async (event: Event<string>) => {
+        const base64EncodedImage = event.payload;
+        
+        await openImage(base64EncodedImage);
         try {
             await showToolbarWindow();
         } catch (e) {
