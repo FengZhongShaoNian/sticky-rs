@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use log::{info, warn};
+use std::error::Error;
 use std::path::Path;
 use tauri::Listener;
 
@@ -28,7 +29,7 @@ struct Args {
     path: Option<String>,
 }
 
-fn try_get_image_from_args(args: Args) -> Option<ImageContent> {
+fn get_image_from_args(args: Args) -> Option<ImageContent> {
     let image_path = args.path.as_ref()?;
 
     let path = Path::new(image_path);
@@ -46,11 +47,12 @@ fn try_get_image_from_args(args: Args) -> Option<ImageContent> {
         .ok()
 }
 
-fn try_get_image_from_clipboard(app: &tauri::AppHandle) -> Option<ImageContent> {
-     app.clipboard().read_image()
-    .map(|x| ImageContent::from(x))
-    .inspect_err(|e| warn!("Failed to read image from clipboard: {}", e))
-    .ok()
+fn get_image_from_clipboard(app: &tauri::AppHandle) -> Option<ImageContent> {
+    app.clipboard()
+        .read_image()
+        .map(|x| ImageContent::from(x))
+        .inspect_err(|e| warn!("Failed to read image from clipboard: {}", e))
+        .ok()
 }
 
 fn main() {
@@ -60,26 +62,16 @@ fn main() {
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             info!("{}, {argv:?}, {cwd}", app.package_info().name);
             let args = Args::parse_from(argv);
-            try_open_main_window(&app, args);
+            open_image_if_present(&app, args);
         }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             let args = Args::parse();
 
-            try_open_main_window(app.handle(), args);
+            create_tray_icon(app)?;
+            open_image_if_present(app.handle(), args);
 
-            let menu = MenuBuilder::new(app).text("quit", "quit").build()?;
-
-            TrayIconBuilder::new()
-                .menu(&menu)
-                .on_menu_event(|_app_handle, event| match event.id().0.as_str() {
-                    "quit" => {
-                        std::process::exit(0);
-                    }
-                    _ => {}
-                })
-                .build(app)?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -92,8 +84,22 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-fn try_open_main_window(app: &tauri::AppHandle, args: Args) {
-    let image = try_get_image_from_args(args).or_else(||try_get_image_from_clipboard(app));
+fn create_tray_icon(app: &mut tauri::App) -> Result<(), Box<dyn Error>> {
+    let menu = MenuBuilder::new(app).text("quit", "quit").build()?;
+    TrayIconBuilder::new()
+        .menu(&menu)
+        .on_menu_event(|_app_handle, event| match event.id().0.as_str() {
+            "quit" => {
+                std::process::exit(0);
+            }
+            _ => {}
+        })
+        .build(app)?;
+    Ok(())
+}
+
+fn open_image_if_present(app: &tauri::AppHandle, args: Args) {
+    let image = get_image_from_args(args).or_else(|| get_image_from_clipboard(app));
 
     if let Some(image) = image {
         let size = image.size;

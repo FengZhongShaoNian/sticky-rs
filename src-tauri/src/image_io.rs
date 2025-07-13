@@ -78,7 +78,7 @@ impl ImageContent {
 pub fn read_image(path: &str) -> Result<ImageContent, Box<dyn std::error::Error>> {
     let data = std::fs::read(path)?;
     let size = get_image_size(&data)?;
-    let mime_type = get_mime_type(&data)?;
+    let mime_type = get_image_mime_type(&data)?;
     Ok(ImageContent {
         mime_type: mime_type,
         data: data,
@@ -94,7 +94,7 @@ pub fn write_image(path: &str, base64_encoded_image: &str) -> Result<(), String>
     std::fs::write(path, content).map_err(|err| err.to_string())
 }
 
-fn get_mime_type(data: &Vec<u8>) -> Result<String, ImageError> {
+fn get_image_mime_type(data: &Vec<u8>) -> Result<String, ImageError> {
     let format = image::guess_format(data)?;
 
     let mime_type = format.to_mime_type();
