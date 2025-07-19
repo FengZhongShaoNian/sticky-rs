@@ -11,11 +11,8 @@ pub fn set_fixed_size(window: WebviewWindow, logical_size: LogicalSize<f64>) {
 }
 
 #[tauri::command]
-pub fn open_devtools(_window: WebviewWindow) {
-    #[cfg(debug_assertions)] // only include this code on debug builds
-    {
-        _window.open_devtools();
-    }
+pub fn open_devtools(window: WebviewWindow) {
+    window.open_devtools();
 }
 
 // 获取窗口的缩放因子

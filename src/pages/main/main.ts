@@ -22,10 +22,8 @@ import { i18n } from "../../common/translation.ts"
 import { LogicalSize, PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { Webview } from '@tauri-apps/api/webview';
 import { writeImage } from '@tauri-apps/plugin-clipboard-manager';
-import {getScaleFactor} from "./scale-factor.ts";
+import { getScaleFactor } from "./scale-factor.ts";
 const currentWebviewWindow = getCurrentWebviewWindow()
-
-const isDevEnvironment = import.meta.env.MODE === 'development';
 
 const editor = new Editor();
 let toolbarWindow: null | Window = null;
@@ -189,17 +187,15 @@ async function showCustomContextMenu() {
         toggleTaskbarIconMenuItem
     ];
 
-    if (isDevEnvironment) {
-        const openDevToolsMenuItem = await MenuItem.new({
-            id: 'OPEN_DEV_TOOLS_MENU_ITEM',
-            text: i18n.t('contextMenu.openDevTools'),
-            enabled: true,
-            action: () => {
-                sendEventToMainWindow(CustomEvent.MENU_OPEN_DEV_TOOLS);
-            }
-        });
-        menuItems.push(openDevToolsMenuItem);
-    }
+    const openDevToolsMenuItem = await MenuItem.new({
+        id: 'OPEN_DEV_TOOLS_MENU_ITEM',
+        text: i18n.t('contextMenu.openDevTools'),
+        enabled: true,
+        action: () => {
+            sendEventToMainWindow(CustomEvent.MENU_OPEN_DEV_TOOLS);
+        }
+    });
+    menuItems.push(openDevToolsMenuItem);
     const contextMenu = await Menu.new({
         items: menuItems
     });
@@ -362,7 +358,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     await listen<string>('open-image', async (event: Event<string>) => {
         const base64EncodedImage = event.payload;
-        
+
         await openImage(base64EncodedImage);
         try {
             await showToolbarWindow();
