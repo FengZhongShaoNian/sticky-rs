@@ -87,10 +87,12 @@ fn main() {
 fn create_tray_icon(app: &mut tauri::App) -> Result<(), Box<dyn Error>> {
     let menu = MenuBuilder::new(app).text("quit", "quit").build()?;
     TrayIconBuilder::new()
+        .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
-        .on_menu_event(|_app_handle, event| match event.id().0.as_str() {
+        .show_menu_on_left_click(true)
+        .on_menu_event(|app, event| match event.id().0.as_str() {
             "quit" => {
-                std::process::exit(0);
+                app.exit(0);
             }
             _ => {}
         })
