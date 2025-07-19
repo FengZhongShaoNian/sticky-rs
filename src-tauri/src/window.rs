@@ -7,7 +7,7 @@ static MAIN_WINDOW_COUNTER: AtomicUsize = AtomicUsize::new(0);
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
 pub fn set_fixed_size(window: WebviewWindow, logical_size: LogicalSize<f64>) {
-    set_fixed_size_with_ref(&window, logical_size);
+    set_fixed_size_ref(&window, logical_size);
 }
 
 #[tauri::command]
@@ -41,9 +41,9 @@ pub fn get_scale_factor(window: WebviewWindow) -> Result<f64, String> {
     }
 }
 
-fn set_fixed_size_with_ref(window: &WebviewWindow, logical_size: LogicalSize<f64>) {
+fn set_fixed_size_ref(window: &WebviewWindow, logical_size: LogicalSize<f64>) {
     window.set_size(logical_size).unwrap();
-    // 由于通过resizeable=false来限制窗口的大小存在bug（https://github.com/tauri-apps/tao/issues/561）
+    // 由于Linux上通过resizeable=false来限制窗口的大小存在bug（https://github.com/tauri-apps/tao/issues/561）
     // 所以这里通过设置最大尺寸和最小尺寸来避免调整窗口大小
     window.set_min_size(Some(logical_size)).unwrap();
     window.set_max_size(Some(logical_size)).unwrap();
@@ -67,17 +67,20 @@ pub fn create_main_window(
     .always_on_top(true)
     .skip_taskbar(true)
     .visible(false)
-    // resizable设置为false会存在bug，改为用set_fixed_size_with_ref代替
-    //.resizable(false)
+    
     .devtools(true)
     .center()
     .window_classname("sticky-rs-main")
     .build()
     .unwrap();
 
+    if ! cfg!(target_os="linux") {
+        main_window.set_resizable(false).unwrap();
+    }
+
     let scale_factor = get_scale_factor(main_window.clone()).unwrap();
     let logical_size: LogicalSize<f64> = initial_window_size.to_logical(scale_factor);
-    set_fixed_size_with_ref(&main_window, logical_size);
+    set_fixed_size_ref(&main_window, logical_size);
     main_window.show().unwrap();
 
     main_window
