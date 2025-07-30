@@ -51,8 +51,8 @@ async function calculateSuitablePositionForToolbarWindow(toolbarSize: PhysicalSi
     const mainWindowInnerPos = await currentWebviewWindow.innerPosition();
     // 让工具条的中点和主窗口的中点的x坐标一致（居中显示工具条）
     const centerX = mainWindowInnerPos.x + mainWindowInnerSize.width / 2;
-    return new PhysicalPosition(centerX - toolbarSize.width / 2,
-        mainWindowInnerPos.y + mainWindowInnerSize.height + marginMainWindowBottom);
+    return new PhysicalPosition(Math.round(centerX - toolbarSize.width / 2),
+        Math.round(mainWindowInnerPos.y + mainWindowInnerSize.height + marginMainWindowBottom));
 }
 
 function createToolbarWindow() {
