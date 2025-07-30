@@ -25,9 +25,7 @@ export class NumberTool extends AbstractAnnotationTool {
         };
 
         this.num = 1;
-        // 1秒中内没有移动则光标自动隐藏
-        const autoHideAfterMsNoMove = 1000;
-        this.customCursor = new CircleNumber(touchpad, undefined, autoHideAfterMsNoMove);
+        this.customCursor = new CircleNumber(touchpad);
         this.customCursor.style.num = this.num;
     }
 

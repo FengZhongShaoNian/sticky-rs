@@ -389,33 +389,62 @@ export class CircleNumber extends Cursor {
         this._diameter = this.calculateDiameter(textMetrics);
     }
 
-    getShape(textMetrics: TextMetrics) {
-        const diameter = this.calculateDiameter(textMetrics);
-
+    getShape(textMetrics: TextMetrics, withRectFrame?: boolean) {
         // 半径
         const radius = this._diameter / 2;
-        return `
-          <svg xmlns="http://www.w3.org/2000/svg">
-            <circle
-              cx="${radius}"
-              cy="${radius}"
-              r="${radius}"
-              fill="${this._style.fillColor}"
-              stroke="${this._style.strokeColor}"
-              stroke-width="${this._style.strokeWidth}" 
-            />
-            <text
-              x="${radius}" 
-              y="${radius+(textMetrics.actualBoundingBoxAscent)/2}"  
-              font-family="${this._style.fontName}"  
-              font-size="${this._style.fontSize}"        
-              fill="${this._style.fontColor}"        
-              text-anchor="middle"     
-            >
-              ${this._style.num}
-            </text>
-          </svg>
-       `;
+        if(!withRectFrame){
+            return `
+              <svg xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  cx="${radius}"
+                  cy="${radius}"
+                  r="${radius}"
+                  fill="${this._style.fillColor}"
+                  stroke="${this._style.strokeColor}"
+                  stroke-width="${this._style.strokeWidth}" 
+                />
+                <text
+                  x="${radius}" 
+                  y="${radius+(textMetrics.actualBoundingBoxAscent)/2}"  
+                  font-family="${this._style.fontName}"  
+                  font-size="${this._style.fontSize}"        
+                  fill="${this._style.fontColor}"        
+                  text-anchor="middle"     
+                >
+                  ${this._style.num}
+                </text>
+              </svg>
+           `;
+        }else {
+            return `
+              <svg xmlns="http://www.w3.org/2000/svg">
+                <rect height="${radius*2}" 
+                  width="${radius*2}" 
+                  fill="none" 
+                  stroke="${this._style.strokeColor}"
+                  stroke-width="1"/>
+                <circle
+                  cx="${radius}"
+                  cy="${radius}"
+                  r="${radius}"
+                  fill="${this._style.fillColor}"
+                  stroke="${this._style.strokeColor}"
+                  stroke-width="${this._style.strokeWidth}" 
+                />
+                <text
+                  x="${radius}" 
+                  y="${radius+(textMetrics.actualBoundingBoxAscent)/2}"  
+                  font-family="${this._style.fontName}"  
+                  font-size="${this._style.fontSize}"        
+                  fill="${this._style.fontColor}"        
+                  text-anchor="middle"     
+                >
+                  ${this._style.num}
+                </text>
+              </svg>
+           `;
+        }
+
     }
 
     getSVG(){
@@ -469,7 +498,7 @@ export class CircleNumber extends Cursor {
         const textMetrics = this.detectTextWidth();
         console.log('textMetrics', textMetrics);
 
-        const shape = this.getShape(textMetrics);
+        const shape = this.getShape(textMetrics, true);
         console.log('CircleNumber shape:', shape);
 
         const encoded = btoa(shape);
