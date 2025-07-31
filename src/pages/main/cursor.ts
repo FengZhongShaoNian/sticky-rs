@@ -75,7 +75,7 @@ export abstract class Cursor {
         this.mouse.style.top = '-50%';
     }
 
-// 更新光标的形状
+    // 更新光标的形状
     abstract updateCursorShape(): void;
 
     // 计算光标的位置
@@ -498,13 +498,13 @@ export class CircleNumber extends Cursor {
         const textMetrics = this.detectTextWidth();
         console.log('textMetrics', textMetrics);
 
-        const shape = this.getShape(textMetrics, true);
-        console.log('CircleNumber shape:', shape);
-
-        const encoded = btoa(shape);
-        const dataURL = `data:image/svg+xml;base64,${encoded}`
-
         this._diameter = this.calculateDiameter(textMetrics);
+        const shape = this.getShape(textMetrics, true);
+
+        console.log('CircleNumber shape:', shape);
+        const encoded = btoa(shape);
+
+        const dataURL = `data:image/svg+xml;base64,${encoded}`
         this.mouse.style.background = `url(${dataURL}) no-repeat center center`;
         this.mouse.style.width = this._diameter + 'px';
         this.mouse.style.height = this._diameter + 'px';
