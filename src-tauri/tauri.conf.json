@@ -25,6 +25,12 @@
         "files": {
           "/usr/bin/sticky-rs.sh": "./template/sticky-rs.sh"
         }
+      },
+      "rpm": {
+        "desktopTemplate": "./template/sticky-rs.desktop",
+        "files": {
+          "/usr/bin/sticky-rs.sh": "./template/sticky-rs.sh"
+        }
       }
     }
   },
