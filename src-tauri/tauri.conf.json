@@ -8,7 +8,8 @@
   "bundle": {
     "active": true,
     "targets": [
-      "deb"
+      "deb",
+      "rpm"
     ],
     "category": "Utility",
     "icon": [
