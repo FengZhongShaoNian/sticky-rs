@@ -39,10 +39,11 @@ yay -S sticky-rs-bin
 ## 用法
 
 ```shell
-Usage: sticky-rs.sh --path <PATH>
+Usage: sticky-rs.sh [OPTIONS]
 
 Options:
   -p, --path <PATH>  Path of image to open
+  -c, --capture      Capture screen region
   -h, --help         Print help
   -V, --version      Print version
 ```
@@ -57,8 +58,23 @@ tmp_file="/tmp/screenshot-sticky/${time}.png"
 gnome-screenshot -c -a -f $tmp_file && /usr/bin/sticky-rs.sh -p "$tmp_file"
 ```
 
+
 可以通过系统自带的快捷键功能设置一个快捷键，将自己喜欢的快捷键绑定到这个脚本，就可以实现一键截图并贴图了。
 顺带一提，在Archlinux中可以这样安装gnome-screenshot:
 ```shell
 sudo pacman -S gnome-screenshot
+```
+
+### 截图功能
+由于gnome-screenshot已经无法在Gnome 49+上使用，因此sticky-rs的最新版本内置了简单的区域截图功能。可以通过以下命令启动区域截图：
+```shell
+sticky-rs.sh -c
+```
+
+说明：如果系统开启了分数缩放，那么需要通过STICKY_RS_SCALE_FACTOR环境变量指定缩放参数：
+```shell
+# 假如系统缩放是125%,那么：
+export STICKY_RS_SCALE_FACTOR=1.25
+# 截图
+sticky-rs.sh -c
 ```

@@ -1,5 +1,5 @@
 import {invoke} from "@tauri-apps/api/core";
-import logger from "../../common/logger.ts";
+import logger from "./logger.ts";
 
 export async function getScaleFactor(){
     let scaleFactor = await invoke<number>('get_scale_factor', {});

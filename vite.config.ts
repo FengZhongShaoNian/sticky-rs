@@ -13,6 +13,7 @@ export default defineConfig(async () => ({
       input: {
         index: path.resolve(__dirname, 'main.html'),
         toolbar: path.resolve(__dirname, 'toolbar.html'),
+        screenshot: path.resolve(__dirname, 'screen-capture.html')
       }
     }
   },

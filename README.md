@@ -40,10 +40,11 @@ yay -S sticky-rs-bin
 ## Usage
 
 ```shell
-Usage: sticky-rs.sh --path <PATH>
+Usage: sticky-rs.sh [OPTIONS]
 
 Options:
   -p, --path <PATH>  Path of image to open
+  -c, --capture      Capture screen region
   -h, --help         Print help
   -V, --version      Print version
 ```
@@ -58,8 +59,21 @@ tmp_file="/tmp/screenshot-sticky/${time}.png"
 gnome-screenshot -c -a -f $tmp_file && /usr/bin/sticky-rs.sh -p "$tmp_file"
 ```
 You can set a shortcut key through the system's built-in shortcut key function, bind your favorite shortcut key to this script, and you can take screenshots and paste pictures with one click.
-
 By the way, you can install gnome-screenshot in Archlinux like this:
 ```shell
 sudo pacman -S gnome-screenshot
+```
+
+### Screenshot Functionality 
+Due to the fact that gnome-screenshot no longer works on Gnome 49+, the latest version of sticky-rs includes a built-in area screenshot feature. You can launch the area screenshot with the following command:
+```shell  
+sticky-rs.sh -c  
+```
+
+**Note:** If fractional scaling is enabled on the system, the scaling factor must be specified using the `STICKY_RS_SCALE_FACTOR` environment variable:
+```shell  
+# If the system scaling is set to 125%, then:  
+export STICKY_RS_SCALE_FACTOR=1.25  
+# Take a screenshot  
+sticky-rs.sh -c  
 ```

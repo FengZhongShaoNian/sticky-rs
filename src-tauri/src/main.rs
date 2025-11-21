@@ -4,7 +4,7 @@
 use log::{info, warn};
 use std::error::Error;
 use std::path::Path;
-use tauri::Listener;
+use tauri::{AppHandle, Listener};
 
 use clap::Parser;
 use tauri::menu::MenuBuilder;
@@ -13,12 +13,14 @@ use tauri::Emitter;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
 use crate::image_io::{read_image, write_image, DataURL, ImageContent};
-use crate::window::{create_main_window, get_scale_factor, open_devtools, set_fixed_size};
+use crate::window::{create_main_window, create_screen_capture_window, get_scale_factor, open_devtools, set_fixed_size};
+use crate::screen_capture::capture_region;
 
 mod common;
 mod events;
 mod image_io;
 mod window;
+mod screen_capture;
 
 /// Command line args
 #[derive(Parser, Debug)]
@@ -27,6 +29,10 @@ struct Args {
     /// Path of image to open
     #[arg(short, long)]
     path: Option<String>,
+
+    /// Capture screen region
+    #[arg(short, long)]
+    capture: bool,
 }
 
 fn get_image_from_args(args: Args) -> Option<ImageContent> {
@@ -62,7 +68,11 @@ fn main() {
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             info!("{}, {argv:?}, {cwd}", app.package_info().name);
             let args = Args::parse_from(argv);
-            open_image_if_present(&app, args);
+            if args.capture {
+                create_screen_capture_window(app);
+            } else {
+                open_image_if_present(&app, args);
+            }
         }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_notification::init())
@@ -70,7 +80,11 @@ fn main() {
             let args = Args::parse();
 
             create_tray_icon(app)?;
-            open_image_if_present(app.handle(), args);
+            if args.capture {
+                create_screen_capture_window(app.handle());
+            } else {
+                open_image_if_present(app.handle(), args);
+            }
 
             Ok(())
         })
@@ -78,7 +92,9 @@ fn main() {
             set_fixed_size,
             open_devtools,
             write_image,
-            get_scale_factor
+            get_scale_factor,
+            capture_region,
+            open_image
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -104,27 +120,37 @@ fn open_image_if_present(app: &tauri::AppHandle, args: Args) {
     let image = get_image_from_args(args).or_else(|| get_image_from_clipboard(app));
 
     if let Some(image) = image {
-        let size = image.size;
-        let data_url: DataURL = image.to_data_url();
-        let initial_window_size = size.into();
-        let main_window = create_main_window(&app, initial_window_size);
-
-        let window_label = main_window.label().to_string();
-
-        // Set up a listener to receive events from the front-end,
-        // and upon completion of the front-end page loading, notify the window to open the specified image.
-        app.listen("page-loaded", move |event| {
-            let payload = event.payload();
-
-            let page_loaded_event_payload: events::PageLoadedEventPayload =
-                serde_json::from_str(payload).unwrap();
-            if page_loaded_event_payload.send_from == window_label {
-                info!("[{window_label}] receive page-loaded event");
-
-                main_window
-                    .emit_to(window_label.clone(), "open-image", data_url.clone())
-                    .unwrap();
-            }
-        });
+        open_image_with_ref(app, image);
     }
+}
+
+pub fn open_image_with_ref(app: &AppHandle, image: ImageContent) {
+    let size = image.size;
+    let data_url: DataURL = image.to_data_url();
+    let initial_window_size = size.into();
+    let main_window = create_main_window(&app, initial_window_size);
+
+    let window_label = main_window.label().to_string();
+
+    // Set up a listener to receive events from the front-end,
+    // and upon completion of the front-end page loading, notify the window to open the specified image.
+    app.listen("page-loaded", move |event| {
+        let payload = event.payload();
+
+        let page_loaded_event_payload: events::PageLoadedEventPayload =
+            serde_json::from_str(payload).unwrap();
+        if page_loaded_event_payload.send_from == window_label {
+            info!("[{window_label}] receive page-loaded event");
+
+            main_window
+                .emit_to(window_label.clone(), "open-image", data_url.clone())
+                .unwrap();
+        }
+    });
+}
+
+#[tauri::command]
+fn open_image(app_handle: AppHandle, image: ImageContent) {
+    info!("image received on open_image: {:?}", image);
+    open_image_with_ref(&app_handle, image);
 }

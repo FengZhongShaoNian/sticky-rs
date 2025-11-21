@@ -22,7 +22,7 @@ import { i18n } from "../../common/translation.ts"
 import { LogicalSize, PhysicalSize, PhysicalPosition } from '@tauri-apps/api/window';
 import { Webview } from '@tauri-apps/api/webview';
 import { writeImage } from '@tauri-apps/plugin-clipboard-manager';
-import { getScaleFactor } from "./scale-factor.ts";
+import { getScaleFactor } from "../../common/scale-factor.ts";
 const currentWebviewWindow = getCurrentWebviewWindow()
 
 const editor = new Editor();

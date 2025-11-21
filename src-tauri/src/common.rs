@@ -1,6 +1,6 @@
 use tauri::PhysicalSize;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug,serde::Serialize,serde::Deserialize)]
 pub struct Size<T> {
     pub width: T,
     pub height: T,

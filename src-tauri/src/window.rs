@@ -82,3 +82,22 @@ pub fn create_main_window(
 
     main_window
 }
+
+pub fn create_screen_capture_window(handle: &AppHandle){
+    tauri::WebviewWindowBuilder::new(
+        handle,
+        "screen-capture",
+        tauri::WebviewUrl::App("screen-capture.html".into()),
+    )
+        .decorations(false)
+        .always_on_top(true)
+        .skip_taskbar(true)
+        .visible(true)
+        .devtools(false)
+        .center()
+        .fullscreen(true)
+        .window_classname("sticky-rs-screen-capture")
+        .transparent(true)
+        .build()
+        .unwrap();
+}

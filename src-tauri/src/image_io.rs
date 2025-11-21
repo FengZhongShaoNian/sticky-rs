@@ -34,6 +34,7 @@ impl serde::Serialize for DataURL {
     }
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct ImageContent {
     pub mime_type: String,
     pub data: Vec<u8>,
@@ -47,6 +48,12 @@ impl From<Image<'_>> for ImageContent {
             ImageBuffer::from_raw(value.width() as u32, value.height() as u32, buf)
                 .expect("创建图像缓冲区失败");
 
+        Self::from(img)
+    }
+}
+
+impl From<RgbaImage> for ImageContent {
+    fn from(img: RgbaImage) -> Self {
         let mut png_bytes = Vec::new();
         img.write_to(
             &mut std::io::Cursor::new(&mut png_bytes),
@@ -58,8 +65,8 @@ impl From<Image<'_>> for ImageContent {
             mime_type: "image/png".to_string(),
             data: png_bytes,
             size: Size {
-                width: value.width(),
-                height: value.height(),
+                width: img.width(),
+                height: img.height(),
             },
         }
     }

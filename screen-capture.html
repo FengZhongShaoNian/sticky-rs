@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区域截图工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: transparent;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            user-select: none;
+        }
+
+        .screen-capture-tip {
+            background: rgba(15, 32, 39, 0.6);
+            color: #ffffff;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 3em;
+        }
+
+        /* 透明选择区域 */
+        .transparent-area {
+            position: absolute;
+            background: transparent;
+            border: 2px dashed #64b3f4;
+            box-shadow: 0 0 0 10000px rgba(15, 32, 39, 0.6);/*通过一个巨大的阴影来遮罩选区之外的区域*/
+            display: none;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+<div class="screen-capture-tip" id="screenCaptureTip">按下鼠标左键进行截图，按下Esc键退出截图</div>
+<!-- 透明选择区域 -->
+<div class="transparent-area" id="transparentArea"></div>
+
+<script type="module" src="/src/pages/screen-capture/main.ts"></script>
+
+</body>
+</html>
