@@ -42,7 +42,7 @@ async function captureRegion(x: number, y: number, width: number, height: number
         width: Math.round(scaledWidth),
         height: Math.round(scaledHeight)
     });
-    await logger.info("截图成功: " + JSON.stringify(image));
+    await logger.trace("截图成功: " + JSON.stringify(image));
     await openImage(image);
     await appWindow.close();
 }

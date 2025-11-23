@@ -1,7 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use log::{info, warn};
+use log::{info, trace, warn};
 use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Listener};
@@ -151,6 +151,6 @@ pub fn open_image_with_ref(app: &AppHandle, image: ImageContent) {
 
 #[tauri::command]
 fn open_image(app_handle: AppHandle, image: ImageContent) {
-    info!("image received on open_image: {:?}", image);
+    trace!("image received on open_image: {:?}", image);
     open_image_with_ref(&app_handle, image);
 }
