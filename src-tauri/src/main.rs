@@ -1,7 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use log::{info, trace, warn};
+use std::env;
+use log::{info, warn};
 use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Listener};
@@ -61,10 +62,27 @@ fn get_image_from_clipboard(app: &tauri::AppHandle) -> Option<ImageContent> {
         .ok()
 }
 
+fn log_level() -> log::LevelFilter {
+    match env::var("RUST_LOG") {
+        Ok(value) => {
+            match value.as_str() {
+                "trace" => log::LevelFilter::Trace,
+                "debug" => log::LevelFilter::Debug,
+                "info" => log::LevelFilter::Info,
+                "warn" => log::LevelFilter::Warn,
+                "error" => log::LevelFilter::Error,
+                "off" => log::LevelFilter::Off,
+                _ => log::LevelFilter::Info,  // 默认情况
+            }
+        },
+        Err(_) => log::LevelFilter::Info,  // 环境变量不存在时的默认值
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(tauri_plugin_log::Builder::new().level(log_level()).build())
         .plugin(tauri_plugin_single_instance::init(|app, argv, cwd| {
             info!("{}, {argv:?}, {cwd}", app.package_info().name);
             let args = Args::parse_from(argv);
@@ -151,6 +169,6 @@ pub fn open_image_with_ref(app: &AppHandle, image: ImageContent) {
 
 #[tauri::command]
 fn open_image(app_handle: AppHandle, image: ImageContent) {
-    trace!("image received on open_image: {:?}", image);
+    info!("image received on open_image, size: {:?}, mime_type:{}", image.size, image.mime_type);
     open_image_with_ref(&app_handle, image);
 }

@@ -1,5 +1,5 @@
 
-use log::info;
+use log::{error, info};
 use xcap::Monitor;
 use crate::image_io::ImageContent;
 
@@ -17,7 +17,15 @@ pub fn capture_region(x: u32, y: u32, width: u32, height: u32) -> ImageContent {
     let monitor_height = monitor.height().unwrap();
     info!("Monitor width: {}, height: {}", monitor_width, monitor_height);
 
-    let image = monitor.capture_region(x, y, width , height).unwrap();
+    let capture_result = monitor.capture_region(x, y, width , height);
 
-    ImageContent::from(image)
+    match capture_result {
+        Err(error) => {
+            error!("Failed to capture region: {}", error);
+            panic!("Failed to capture region: {}", error);
+        },
+        Ok(content) => {
+            ImageContent::from(content)
+        }
+    }
 }
